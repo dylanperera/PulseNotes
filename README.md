@@ -1,2 +1,2 @@
 # PulseNotes
-Medical AI Scribe
+Medical AI Scribe to transcribe and summarize doctor-patient meetings
