@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import "./TranscriptionPage.css"; 
-import logo from "../assets/PulseNotesLogo.png"; 
+import logo from "../../assets/images/PulseNotesLogo.png"; 
 import { Mic, Pause, Sparkles } from "lucide-react";
 
 function TranscriptionPage() {
