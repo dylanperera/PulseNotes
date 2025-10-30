@@ -1,6 +1,6 @@
 import React from "react";
 import { MemoryRouter as Router, Routes, Route } from "react-router-dom";
-import TranscriptionPage from "./views/TranscriptionPage";
+import TranscriptionPage from "./views/TranscriptionPage/TranscriptionPage";
 
 function App() {
   return (
