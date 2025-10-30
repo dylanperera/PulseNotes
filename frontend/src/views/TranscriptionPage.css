@@ -1,0 +1,136 @@
+.app-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  height: 100vh;
+  background-color: #ffffff;
+  font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+}
+
+.header {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: absolute;
+  top: 25px;
+  right: 25px;
+}
+
+.logo {
+  height: 60px;
+  margin-right: 8px;
+}
+
+.title {
+  font-size: 24px;
+  font-weight: bold;
+  color: #00a0e9;
+}
+
+.content {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 45px;
+  transform: scale(1.1);
+}
+
+.text-area-container {
+  position: relative;
+}
+
+.recording-status {
+  position: absolute;
+  top: -45px; /* raised above text area */
+  left: 10px;
+  color: red;
+  font-weight: bold;
+  font-size: 18px;
+}
+
+.text-area {
+  width: 750px;
+  height: 450px;
+  padding: 20px;
+  border-radius: 18px;
+  border: 2px solid #ccc;
+  font-size: 18px;
+  resize: none;
+  outline: none;
+  background-color: #fafafa;
+  transition: background-color 0.3s ease;
+}
+
+.text-area.disabled {
+  background-color: #d8d8d8;
+}
+
+.controls {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 25px;
+}
+
+.mic-button {
+  background-color: #00c853;
+  border: none;
+  color: white;
+  font-size: 60px;
+  width: 120px;
+  height: 120px;
+  border-radius: 50%;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.mic-button.recording {
+  background-color: #d50000;
+}
+
+.mic-icon {
+  font-size: 55px;
+  position: relative;
+  top: 6px;
+}
+
+.summarize-button {
+  background-color: white;
+  border: 2.5px solid #333;
+  color: black;
+  font-weight: bold;
+  font-size: 18px;
+  padding: 15px 30px;
+  border-radius: 30px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 3px; 
+}
+
+.summarize-icon {
+  position: relative;
+  left: 1px;  
+  top: 0.2px;   
+  stroke-width: 2.5;
+}
+
+.summarize-button:hover:not(:disabled) {
+  background-color: #333;
+  color: white;
+}
+
+.summarize-button:hover:not(:disabled) .summarize-icon {
+  stroke: white; 
+}
+
+.summarize-button:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+}
