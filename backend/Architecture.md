@@ -1,6 +1,6 @@
 1. "Layered Architecture"
 
-Organized is organizaed into horizontal layers, each with a clear responsibility:
+Organized into horizontal layers, each with a clear responsibility:
 
     Frontend / View → presentation and user interaction (Electron)
 
