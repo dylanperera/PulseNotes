@@ -23,9 +23,14 @@ function TranscriptionPage() {
   const [transcript, setTranscript] = useState("");
   const [summary, setSummary] = useState("");
 
-  const handleMicClick = () => {
+  const handleStartRecording = () => {
+    setRecordingStarted(!recordingStarted);
+  }
+
+  const handleIsRecording = () => {
     setIsRecording(!isRecording);
-  };
+  }
+
 
   const handleSummarize = () => {
     if (!isRecording) {
@@ -42,7 +47,12 @@ function TranscriptionPage() {
           <PatientName />
           <div className="main-options">
             <Timer isRecording={isRecording}/>
-            <RecordingOptions />
+            <RecordingOptions 
+              isRecording={isRecording} 
+              recordingStarted={recordingStarted}
+              handleIsRecording={handleIsRecording}
+              handleStartRecording={handleStartRecording}
+            />
 
             {/* <button className="button-inline btn">
               { recordingStarted ? < }
@@ -65,7 +75,6 @@ function TranscriptionPage() {
         </button>
       </div>
       
-
     
       <div className="content">
         <TextField 
