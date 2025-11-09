@@ -89,3 +89,17 @@
     cursor: not-allowed;
   }
   
+  .blinking-dot {
+    width: 10px;
+    height: 10px;
+    margin-right: 8px;
+    padding-right: 4%;
+    background-color: red;
+    border-radius: 50%; 
+    animation: blink 1.3s infinite ease-in-out;
+  }
+  
+  @keyframes blink {
+    0%, 100% { opacity: 0; }
+    50% { opacity: 1; }
+  }
