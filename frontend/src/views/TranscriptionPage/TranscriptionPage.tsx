@@ -2,6 +2,7 @@ import React, { useState } from "react";
 import "./TranscriptionPage.css"; 
 import logo from "../../assets/images/PulseNotesLogo.png"; 
 import { Mic, Pause, Sparkles } from "lucide-react";
+import { useNavigate } from "react-router-dom";
 
 function TranscriptionPage() {
   const [isRecording, setIsRecording] = useState(false);
@@ -15,9 +16,11 @@ function TranscriptionPage() {
     if (!isRecording) setText(e.target.value);
   };
 
+  const navigate = useNavigate();
+
   const handleSummarize = () => {
     if (!isRecording) {
-      alert("Summarization service gets called");
+      navigate("/summary");
     }
   };
 
