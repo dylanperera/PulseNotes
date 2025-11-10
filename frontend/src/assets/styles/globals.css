@@ -1,105 +1,71 @@
 .patient-name-input {
-  display: flex;
-  align-items: center;
-  gap: 0.5rem; 
-  background: 1px solid;
+	display: flex;
+	align-items: center;
+	gap: 0.5rem;
+	background: 1px solid;
 }
 
 .button-inline {
-  display: flex;
-  align-items: center;
-  gap: 0.4rem; 
+	display: flex;
+	align-items: center;
+	gap: 0.4rem;
 }
 
 .timer {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  gap: 0.2rem;
+	display: inline-flex;
+	align-items: center;
+	justify-content: center;
+	gap: 0.2rem;
 }
 
 .calendar {
-  padding-left: 45px;
-  gap: 5px;
+	padding-left: 45px;
+	gap: 5px;
 }
 
 /* Each column */
 .text-area-container {
-  flex: 1 1 0;        
-  min-width: 0;        
-  display: flex;
-  flex-direction: column;
+	flex: 1 1 0;
+	min-width: 0;
+	display: flex;
+	flex-direction: column;
 }
 
 /* The textarea */
 .text-area {
-  width: 100%;  
-  height: 100%;        
-  box-sizing: border-box; 
-  padding: 20px;
-  border-radius: 18px;
-  border: 2px solid #ccc;
-  font-size: 18px;
-  resize: none;
-  outline: none;
-  background-color: #fafafa;
-  transition: background-color 0.3s ease;
+	width: 100%;
+	height: 100%;
+	box-sizing: border-box;
+	padding: 20px;
+	border-radius: 18px;
+	border: 2px solid #ccc;
+	font-size: 18px;
+	resize: none;
+	outline: none;
+	background-color: #fafafa;
+	transition: background-color 0.3s ease;
 }
 
 .text-area.disabled {
-  background-color: #d8d8d8;
+	background-color: #d8d8d8;
 }
 
-.btn {
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    padding: 0.2rem 1rem;
-    border-radius: 10px;                     /* Slightly rounded corners */
-    border: 1px solid black; /* Soft teal-blue border */
-    background: rgba(255, 255, 255, 0.1);    /* Transparent glassy fill */
-    color: black;                          /* Text color from your logo */
-    font-weight: 600;
-    backdrop-filter: blur(6px);              /* Frosted-glass blur effect */
-    cursor: pointer;
-    transition: all 0.25s ease;
-  }
-  
-  .btn:hover:not(:disabled) {
-    background-color: #333;
-    color: white;
-  }
-  
-  .btn:hover:not(:disabled) .summarize-icon {
-    stroke: white; 
-  }
-  
-  .btn:disabled {
-    opacity: 0.4;
-    cursor: not-allowed;
-  }
-  
-  .btn:active {
-    background: rgba(42, 110, 179, 0.18);
-    transform: translateY(0);
-  }
-  
-  .btn:disabled {
-    opacity: 0.6;
-    cursor: not-allowed;
-  }
-  
-  .blinking-dot {
-    width: 10px;
-    height: 10px;
-    margin-right: 8px;
-    padding-right: 4%;
-    background-color: red;
-    border-radius: 50%; 
-    animation: blink 1.3s infinite ease-in-out;
-  }
-  
-  @keyframes blink {
-    0%, 100% { opacity: 0; }
-    50% { opacity: 1; }
-  }
+.blinking-dot {
+	width: 10px;
+	height: 10px;
+	margin-right: 8px;
+	padding-right: 4%;
+	background-color: red;
+	border-radius: 50%;
+	animation: blink 1.3s infinite ease-in-out;
+}
+
+@keyframes blink {
+	0%,
+	100% {
+		opacity: 0;
+	}
+	50% {
+		opacity: 1;
+	}
+}
