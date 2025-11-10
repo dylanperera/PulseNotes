@@ -1,102 +1,92 @@
-import React, { useState } from "react";
-import "./TranscriptionPage.css"; 
-import logo from "../../assets/images/PulseNotesTransparent.png"; 
-import { Mic, Pause, Sparkles } from "lucide-react";
-import TranslateIcon from '@mui/icons-material/Translate';
-import PersonOutlineIcon from '@mui/icons-material/PersonOutline';
-import TimerOutlinedIcon from '@mui/icons-material/TimerOutlined';
-import MicIcon from '@mui/icons-material/Mic';
-import PauseIcon from '@mui/icons-material/Pause';
-import AddCircleOutlineOutlinedIcon from '@mui/icons-material/AddCircleOutlineOutlined';
-import PatientName from "../../Components/PatientName";
+import { useState } from "react";
+import "./TranscriptionPage.css";
+import { Sparkles } from "lucide-react";
+import logo from "../../assets/images/PulseNotesTransparent.png";
 import Calendar from "../../Components/Calendar";
-import Timer from "../../Components/Timer";
+import PatientName from "../../Components/PatientName";
 import RecordingOptions from "../../Components/RecordingOptions";
 import TextField from "../../Components/TextField";
+import Timer from "../../Components/Timer";
 
 function TranscriptionPage() {
-  const [isRecording, setIsRecording] = useState(false);
-  const [recordingStarted, setRecordingStarted] = useState(false);
+	const [isRecording, setIsRecording] = useState(false);
+	const [recordingStarted, setRecordingStarted] = useState(false);
 
-  const [time, setTimer] = useState()
+	const [time, setTimer] = useState();
 
-  const [transcript, setTranscript] = useState("");
-  const [summary, setSummary] = useState("");
+	const [transcript, setTranscript] = useState("");
+	const [summary, setSummary] = useState("");
 
-  const handleStartRecording = () => {
-    setRecordingStarted(!recordingStarted);
-  }
+	const handleStartRecording = () => {
+		setRecordingStarted(!recordingStarted);
+	};
 
-  const handleIsRecording = () => {
-    setIsRecording(!isRecording);
-  }
+	const handleIsRecording = () => {
+		setIsRecording(!isRecording);
+	};
 
+	const handleSummarize = () => {
+		if (!isRecording) {
+			alert("Summarization service gets called");
+		}
+	};
 
-  const handleSummarize = () => {
-    if (!isRecording) {
-      alert("Summarization service gets called");
-    }
-  };
+	return (
+		<div className="app-container">
+			{/* Header */}
+			<div className="top-level-header">
+				<PatientName />
+				<div className="main-options">
+					<Timer isRecording={isRecording} />
+					<RecordingOptions
+						isRecording={isRecording}
+						recordingStarted={recordingStarted}
+						handleIsRecording={handleIsRecording}
+						handleStartRecording={handleStartRecording}
+					/>
 
-
-  return (
-    <div className="app-container">
-
-      {/* Header */}
-      <div className="top-level-header">
-          <PatientName />
-          <div className="main-options">
-            <Timer isRecording={isRecording}/>
-            <RecordingOptions 
-              isRecording={isRecording} 
-              recordingStarted={recordingStarted}
-              handleIsRecording={handleIsRecording}
-              handleStartRecording={handleStartRecording}
-            />
-
-            {/* <button className="button-inline btn">
+					{/* <button className="button-inline btn">
               { recordingStarted ? < }
               <p>00:00:00</p>
             </button> */}
-          </div>
+				</div>
+			</div>
 
-      </div>
-      
-      <div className="second-level-header">
-        <Calendar />
+			<div className="second-level-header">
+				<Calendar />
 
-        <button
-          className="summarize-button"
-          onClick={handleSummarize}
-          disabled={isRecording}
-        >
-          <b>SUMMARIZE</b>
-          <Sparkles size={20} className="summarize-icon" />
-        </button>
-      </div>
-      
-    
-      <div className="content">
-        <TextField 
-            isRecording={isRecording} 
-            text={transcript} 
-            handleTextChange={setTranscript}
-            placeHolder="Start recording or type notes here..."
-            />
-        <TextField 
-            isRecording={isRecording} 
-            text={summary} 
-            handleTextChange={setSummary}
-            placeHolder="Summary..."
-            />
-      </div>
+				<button
+					className="summarize-button"
+					onClick={handleSummarize}
+					disabled={isRecording}
+					type="button"
+				>
+					<b>SUMMARIZE</b>
+					<Sparkles size={20} className="summarize-icon" />
+				</button>
+			</div>
 
-      {/* Footer */}
-      <div className="footer">
-        <img src={logo} alt="Pulse Notes Logo" /> 
-      </div>
-    </div>
-  );
+			<div className="content">
+				<TextField
+					isRecording={isRecording}
+					text={transcript}
+					handleTextChange={setTranscript}
+					placeHolder="Start recording or type notes here..."
+				/>
+				<TextField
+					isRecording={isRecording}
+					text={summary}
+					handleTextChange={setSummary}
+					placeHolder="Summary..."
+				/>
+			</div>
+
+			{/* Footer */}
+			<div className="footer">
+				<img src={logo} alt="Pulse Notes Logo" />
+			</div>
+		</div>
+	);
 }
 
 export default TranscriptionPage;
