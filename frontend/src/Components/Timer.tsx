@@ -5,7 +5,6 @@ export default function Timer(props: { isRecording: boolean }) {
 	return (
 		<div className="timer">
 			<TimerOutlinedIcon />
-			<div>hello</div>
 			<p>00:00:00</p>
 		</div>
 	);
