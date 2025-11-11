@@ -12,8 +12,6 @@ function TranscriptionPage() {
 	const [isRecording, setIsRecording] = useState(false);
 	const [recordingStarted, setRecordingStarted] = useState(false);
 
-	const [time, setTimer] = useState();
-
 	const [transcript, setTranscript] = useState("");
 	const [summary, setSummary] = useState("");
 
@@ -37,7 +35,7 @@ function TranscriptionPage() {
 			<div className="top-level-header">
 				<PatientName />
 				<div className="main-options">
-					<Timer isRecording={isRecording} />
+					<Timer isRecording={isRecording} recordingStarted={recordingStarted}/>
 					<RecordingOptions
 						isRecording={isRecording}
 						recordingStarted={recordingStarted}
