@@ -35,7 +35,10 @@ function TranscriptionPage() {
 			<div className="top-level-header">
 				<PatientName />
 				<div className="main-options">
-					<Timer isRecording={isRecording} recordingStarted={recordingStarted}/>
+					<Timer
+						isRecording={isRecording}
+						recordingStarted={recordingStarted}
+					/>
 					<RecordingOptions
 						isRecording={isRecording}
 						recordingStarted={recordingStarted}
