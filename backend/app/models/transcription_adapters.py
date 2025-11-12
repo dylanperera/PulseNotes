@@ -10,7 +10,7 @@ class PyWhisperCppAdapter(TranscriptionAdapter):
 
     def _load_model(self, model: str):
         """
-            Loads pywhispercpp model.. should load from cache if downloaded
+            loads pywhispercpp model.. should load from cache if downloaded
         """
         print(f"[PyWhisperCppAdapter] loading whisper.cpp model via python binding library '{model}'...")
         return Model(model)
