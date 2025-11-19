@@ -1,7 +1,15 @@
-from ..models.transcription_adapters import PyWhisperCppAdapter
-from ..models.base_models import AudioCapture
-from ..models.base_models import AudioPreprocessor
+from ..models.asr.adapters.pywhispercpp_adapter import PyWhisperCppAdapter
+from .audio.audio_capture_service import AudioCapture
+from .audio.audio_preprocessing_service import AudioPreprocessor
 import time
+import shutil
+
+def print_clean(text):
+    columns = shutil.get_terminal_size((80, 20)).columns
+    # Clear the line with spaces, then print text
+    print("\r" + " " * columns, end="")   # wipe line
+    print("\r" + text, end="", flush=True)
+
 
 def main():
     adapter = PyWhisperCppAdapter(model="small")
@@ -22,7 +30,7 @@ def main():
                 # run a partial transcription every few seconds
                 partial_text = adapter.transcribe(finalize=False)
                 if partial_text.strip():
-                    print(f"\r{partial_text.strip()}", end="", flush=True)
+                    print_clean(partial_text.strip())
                     adapter.reset_buffer()
 
             time.sleep(0.2)  # small delay to reduce CPU load
