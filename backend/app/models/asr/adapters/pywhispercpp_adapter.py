@@ -1,6 +1,6 @@
 from pywhispercpp.model import Model
 import numpy as np
-from .base_models import TranscriptionAdapter
+from ..base_asr_interface import TranscriptionAdapter
 
 class PyWhisperCppAdapter(TranscriptionAdapter):
     def __init__(self, model: str):
