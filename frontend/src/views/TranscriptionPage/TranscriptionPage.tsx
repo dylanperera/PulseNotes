@@ -1,8 +1,9 @@
 import { useState } from "react";
 import "./TranscriptionPage.css";
-import { Sparkles } from "lucide-react";
+import AutoAwesomeIcon from "@mui/icons-material/AutoAwesome";
 import logo from "../../assets/images/PulseNotesTransparent.png";
 import Calendar from "../../Components/Calendar";
+import NewSessionButton from "../../Components/NewSessionButton";
 import PatientName from "../../Components/PatientName";
 import RecordingOptions from "../../Components/RecordingOptions";
 import TextField from "../../Components/TextField";
@@ -34,6 +35,9 @@ function TranscriptionPage() {
 			{/* Header */}
 			<div className="top-level-header">
 				<PatientName />
+
+				<NewSessionButton />
+
 				<div className="main-options">
 					<Timer
 						isRecording={isRecording}
@@ -45,11 +49,6 @@ function TranscriptionPage() {
 						handleIsRecording={handleIsRecording}
 						handleStartRecording={handleStartRecording}
 					/>
-
-					{/* <button className="button-inline btn">
-              { recordingStarted ? < }
-              <p>00:00:00</p>
-            </button> */}
 				</div>
 			</div>
 
@@ -63,7 +62,7 @@ function TranscriptionPage() {
 					type="button"
 				>
 					<b>SUMMARIZE</b>
-					<Sparkles size={20} className="summarize-icon" />
+					<AutoAwesomeIcon />
 				</button>
 			</div>
 

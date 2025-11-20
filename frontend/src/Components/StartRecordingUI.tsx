@@ -1,7 +1,8 @@
-import FileUploadOutlinedIcon from "@mui/icons-material/FileUploadOutlined";
 import KeyboardArrowDownIcon from "@mui/icons-material/KeyboardArrowDown";
 import MicIcon from "@mui/icons-material/Mic";
 import Button from "@mui/material/Button";
+import Divider from "@mui/material/Divider";
+import ListItemText from "@mui/material/ListItemText";
 import Menu, { type MenuProps } from "@mui/material/Menu";
 import MenuItem from "@mui/material/MenuItem";
 import { alpha, styled } from "@mui/material/styles";
@@ -104,11 +105,17 @@ export default function StartRecordingUI(props: {
 				onClose={handleClose}
 			>
 				<MenuItem onClick={handleStart} disableRipple>
-					Start Transcribing
+					<ListItemText
+						primary="Llama 3.2"
+						secondary="(Decides how long to think)"
+					/>
 				</MenuItem>
+				<Divider sx={{ my: 0.5 }} />
 				<MenuItem onClick={handleClose} disableRipple>
-					<p style={{ marginRight: "8px" }}>Upload Session Audio</p>
-					<FileUploadOutlinedIcon />
+					<ListItemText
+						primary="MediPhi-Clinical"
+						secondary="(Thinks longer for better answers)"
+					/>{" "}
 				</MenuItem>
 			</StyledMenu>
 		</div>
