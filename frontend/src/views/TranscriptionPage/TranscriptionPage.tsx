@@ -6,8 +6,10 @@ import Calendar from "../../Components/Calendar";
 import NewSessionButton from "../../Components/NewSessionButton";
 import PatientName from "../../Components/PatientName";
 import RecordingOptions from "../../Components/RecordingOptions";
+import SelectModelOptions from "../../Components/SelectModelOptions";
 import TextField from "../../Components/TextField";
 import Timer from "../../Components/Timer";
+import ExportButton from "../../Components/ExportButton";
 
 function TranscriptionPage() {
 	const [isRecording, setIsRecording] = useState(false);
@@ -15,6 +17,8 @@ function TranscriptionPage() {
 
 	const [transcript, setTranscript] = useState("");
 	const [summary, setSummary] = useState("");
+
+	const [doneSummarizing, setDoneSummarizing] = useState(false);
 
 	const handleStartRecording = () => {
 		setRecordingStarted(!recordingStarted);
@@ -28,6 +32,8 @@ function TranscriptionPage() {
 		if (!isRecording) {
 			alert("Summarization service gets called");
 		}
+
+		setDoneSummarizing(true);
 	};
 
 	return (
@@ -56,15 +62,21 @@ function TranscriptionPage() {
 			<div className="second-level-header">
 				<Calendar />
 
-				<button
-					className="summarize-button"
-					onClick={handleSummarize}
-					disabled={isRecording}
-					type="button"
-				>
-					<b>SUMMARIZE</b>
-					<AutoAwesomeIcon />
-				</button>
+				{!doneSummarizing ? (
+					<div className="main-options">
+						<SelectModelOptions />
+						<button
+							className="summarize-button"
+							onClick={handleSummarize}
+							disabled={isRecording}
+							type="button"
+						>
+							<b>SUMMARIZE</b>
+							<AutoAwesomeIcon />
+						</button>
+					</div>
+				) : (<ExportButton/>)				
+				}
 			</div>
 
 			<div className="content">
