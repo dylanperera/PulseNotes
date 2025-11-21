@@ -1,3 +1,4 @@
+import DownloadForOfflineIcon from "@mui/icons-material/DownloadForOffline";
 import KeyboardArrowDownIcon from "@mui/icons-material/KeyboardArrowDown";
 import MicIcon from "@mui/icons-material/Mic";
 import Button from "@mui/material/Button";
@@ -7,7 +8,6 @@ import Menu, { type MenuProps } from "@mui/material/Menu";
 import MenuItem from "@mui/material/MenuItem";
 import { alpha, styled } from "@mui/material/styles";
 import * as React from "react";
-import DownloadForOfflineIcon from '@mui/icons-material/DownloadForOffline';
 
 const StyledMenu = styled((props: MenuProps) => (
 	<Menu
@@ -86,7 +86,7 @@ export default function ExportButton() {
 					},
 				}}
 			>
-                <DownloadForOfflineIcon style={{marginRight: "0.6rem"}}/> 
+				<DownloadForOfflineIcon style={{ marginRight: "0.6rem" }} />
 				<b style={{ marginLeft: "8px" }}>Export</b>
 			</Button>
 			<StyledMenu
@@ -101,15 +101,11 @@ export default function ExportButton() {
 				onClose={handleClose}
 			>
 				<MenuItem onClick={handleStart} disableRipple>
-					<ListItemText
-						primary=".Word"
-					/>
+					<ListItemText primary=".Word" />
 				</MenuItem>
 				<Divider sx={{ my: 0.5 }} />
 				<MenuItem onClick={handleClose} disableRipple>
-					<ListItemText
-						primary=".PDF"
-					/>
+					<ListItemText primary=".PDF" />
 				</MenuItem>
 			</StyledMenu>
 		</div>
