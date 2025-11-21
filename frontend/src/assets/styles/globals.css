@@ -18,6 +18,14 @@
 	gap: 0.2rem;
 }
 
+
+.model-select {
+	display: inline-flex;
+	align-items: center;
+	justify-content: center;
+	gap: 2rem;
+}
+
 .calendar {
 	padding-left: 45px;
 	gap: 5px;

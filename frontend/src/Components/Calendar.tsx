@@ -19,13 +19,23 @@ export default function DateTimePickerValue() {
 					slotProps={{
 						textField: {
 							sx: {
+								// DEFAULT BORDER
+								"& .MuiPickersOutlinedInput-notchedOutline": {
+									borderColor: "#244A82",
+								},
+
+								// HOVER BORDER
 								"&:hover .MuiPickersOutlinedInput-notchedOutline": {
 									borderColor: "#244A82",
 								},
+
+								// FOCUSED BORDER
 								"& .MuiPickersInputBase-root.Mui-focused .MuiPickersOutlinedInput-notchedOutline":
 									{
 										borderColor: "#244A82",
 									},
+
+								// FOCUSED LABEL
 								"& .MuiInputLabel-root.Mui-focused": {
 									color: "#3AA6A4",
 								},
