@@ -12,6 +12,7 @@ export default function PatientName() {
 				sx={{ "& > :not(style)": { m: 1, width: "25ch" } }}
 				noValidate
 				autoComplete="off"
+				borderColor="#3AA6A4"
 			>
 				<TextField
 					id="standard-basic"
@@ -21,9 +22,20 @@ export default function PatientName() {
 						input: {
 							startAdornment: (
 								<InputAdornment position="start">
-									<PersonOutlineIcon></PersonOutlineIcon>
+									<PersonOutlineIcon sx={{ color: "#244A82" }} />
 								</InputAdornment>
 							),
+						},
+					}}
+					sx={{
+						"& .MuiInput-underline:after": {
+							borderBottomColor: "#3AA6A4",
+						},
+						"& .MuiInput-underline:hover:before": {
+							borderBottomColor: "#3AA6A4",
+						},
+						"& .MuiInputLabel-root.Mui-focused": {
+							color: "#3AA6A4",
 						},
 					}}
 				/>
