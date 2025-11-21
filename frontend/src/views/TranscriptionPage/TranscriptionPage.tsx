@@ -34,9 +34,10 @@ function TranscriptionPage() {
 		<div className="app-container">
 			{/* Header */}
 			<div className="top-level-header">
-				<PatientName />
-
-				<NewSessionButton />
+				<div style={{ display: "flex" }}>
+					<PatientName />
+					<NewSessionButton isRecording={isRecording} />
+				</div>
 
 				<div className="main-options">
 					<Timer
