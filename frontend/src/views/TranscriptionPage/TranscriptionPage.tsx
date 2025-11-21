@@ -3,13 +3,13 @@ import "./TranscriptionPage.css";
 import AutoAwesomeIcon from "@mui/icons-material/AutoAwesome";
 import logo from "../../assets/images/PulseNotesTransparent.png";
 import Calendar from "../../Components/Calendar";
+import ExportButton from "../../Components/ExportButton";
 import NewSessionButton from "../../Components/NewSessionButton";
 import PatientName from "../../Components/PatientName";
 import RecordingOptions from "../../Components/RecordingOptions";
 import SelectModelOptions from "../../Components/SelectModelOptions";
 import TextField from "../../Components/TextField";
 import Timer from "../../Components/Timer";
-import ExportButton from "../../Components/ExportButton";
 
 function TranscriptionPage() {
 	const [isRecording, setIsRecording] = useState(false);
@@ -75,8 +75,9 @@ function TranscriptionPage() {
 							<AutoAwesomeIcon />
 						</button>
 					</div>
-				) : (<ExportButton/>)				
-				}
+				) : (
+					<ExportButton />
+				)}
 			</div>
 
 			<div className="content">

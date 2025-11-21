@@ -1,4 +1,3 @@
-import { TextField } from "@mui/material";
 import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
 import { DateTimePicker } from "@mui/x-date-pickers/DateTimePicker";
 import { LocalizationProvider } from "@mui/x-date-pickers/LocalizationProvider";
@@ -19,10 +18,6 @@ export default function DateTimePickerValue() {
 					slotProps={{
 						textField: {
 							sx: {
-								// DEFAULT BORDER
-								"& .MuiPickersOutlinedInput-notchedOutline": {
-									borderColor: "#244A82",
-								},
 
 								// HOVER BORDER
 								"&:hover .MuiPickersOutlinedInput-notchedOutline": {

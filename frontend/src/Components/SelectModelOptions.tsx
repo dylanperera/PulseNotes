@@ -1,5 +1,4 @@
 import KeyboardArrowDownIcon from "@mui/icons-material/KeyboardArrowDown";
-import MicIcon from "@mui/icons-material/Mic";
 import Button from "@mui/material/Button";
 import Divider from "@mui/material/Divider";
 import ListItemText from "@mui/material/ListItemText";
