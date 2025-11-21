@@ -9,7 +9,7 @@ export default function PatientName() {
 		<div className="patient-name-input">
 			<Box
 				component="form"
-				sx={{ "& > :not(style)": { m: 1, width: "25ch" } }}
+				sx={{ "& > :not(style)": { m: 1, width: "25ch" }}}
 				noValidate
 				autoComplete="off"
 				borderColor="#3AA6A4"
@@ -17,28 +17,30 @@ export default function PatientName() {
 				<TextField
 					id="standard-basic"
 					label="Patient Name"
+					
 					variant="standard"
 					slotProps={{
 						input: {
-							startAdornment: (
-								<InputAdornment position="start">
-									<PersonOutlineIcon sx={{ color: "#244A82" }} />
-								</InputAdornment>
-							),
+						startAdornment: (
+							<InputAdornment position="start">
+							<PersonOutlineIcon sx={{ color: "#3AA6A4" }}/>
+							</InputAdornment>
+						),
 						},
 					}}
 					sx={{
 						"& .MuiInput-underline:after": {
-							borderBottomColor: "#3AA6A4",
+						borderBottomColor: "#3AA6A4",  
 						},
 						"& .MuiInput-underline:hover:before": {
-							borderBottomColor: "#3AA6A4",
+						borderBottomColor: "#3AA6A4",
 						},
 						"& .MuiInputLabel-root.Mui-focused": {
-							color: "#3AA6A4",
+						color: "#244A82",
 						},
+
 					}}
-				/>
+					/>
 			</Box>
 		</div>
 	);
