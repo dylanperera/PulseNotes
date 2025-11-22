@@ -1,69 +1,106 @@
-import React, { useState } from "react";
-import "./TranscriptionPage.css"; 
-import logo from "../../assets/images/PulseNotesLogo.png"; 
-import { Mic, Pause, Sparkles } from "lucide-react";
+import { useState } from "react";
+import "./TranscriptionPage.css";
+import AutoAwesomeIcon from "@mui/icons-material/AutoAwesome";
+import logo from "../../assets/images/PulseNotesTransparent.png";
+import Calendar from "../../Components/Calendar";
+import ExportButton from "../../Components/ExportButton";
+import NewSessionButton from "../../Components/NewSessionButton";
+import PatientName from "../../Components/PatientName";
+import RecordingOptions from "../../Components/RecordingOptions";
+import SelectModelOptions from "../../Components/SelectModelOptions";
+import TextField from "../../Components/TextField";
+import Timer from "../../Components/Timer";
 
 function TranscriptionPage() {
-  const [isRecording, setIsRecording] = useState(false);
-  const [text, setText] = useState("");
+	const [isRecording, setIsRecording] = useState(false);
+	const [recordingStarted, setRecordingStarted] = useState(false);
 
-  const handleMicClick = () => {
-    setIsRecording(!isRecording);
-  };
+	const [transcript, setTranscript] = useState("");
+	const [summary, setSummary] = useState("");
 
-  const handleTextChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
-    if (!isRecording) setText(e.target.value);
-  };
+	const [doneSummarizing, setDoneSummarizing] = useState(false);
 
-  const handleSummarize = () => {
-    if (!isRecording) {
-      alert("Summarization service gets called");
-    }
-  };
+	const handleStartRecording = () => {
+		setRecordingStarted(!recordingStarted);
+	};
 
-  return (
-    <div className="app-container">
-      {/* Header */}
-      <div className="header">
-        <img src={logo} alt="Pulse Notes Logo" className="logo" />
-      </div>
+	const handleIsRecording = () => {
+		setIsRecording(!isRecording);
+	};
 
-      <div className="content">
-        <div className="text-area-container">
-          {isRecording && (
-            <p className="recording-status">TRANSCRIBING IN PROCESS...</p>
-          )}
-          <textarea
-            className={`text-area ${isRecording ? "disabled" : ""}`}
-            placeholder="Start recording or type notes here..."
-            value={text}
-            onChange={handleTextChange}
-            disabled={isRecording}
-          />
-        </div>
+	const handleSummarize = () => {
+		if (!isRecording) {
+			alert("Summarization service gets called");
+		}
 
-        <div className="controls">
-          <button
-            className={`mic-button ${isRecording ? "recording" : ""}`}
-            onClick={handleMicClick}
-          >
-            <span className="mic-icon">
-              {isRecording ? <Pause size={80} /> : <Mic size={80} />}
-            </span>
-          </button>
+		setDoneSummarizing(true);
+	};
 
-          <button
-            className="summarize-button"
-            onClick={handleSummarize}
-            disabled={isRecording}
-          >
-            <span>SUMMARIZE</span>
-            <Sparkles size={20} className="summarize-icon" />
-          </button>
-        </div>
-      </div>
-    </div>
-  );
+	return (
+		<div className="app-container">
+			{/* Header */}
+			<div className="top-level-header">
+				<div style={{ display: "flex" }}>
+					<PatientName />
+					<NewSessionButton isRecording={isRecording} />
+				</div>
+
+				<div className="main-options">
+					<Timer
+						isRecording={isRecording}
+						recordingStarted={recordingStarted}
+					/>
+					<RecordingOptions
+						isRecording={isRecording}
+						recordingStarted={recordingStarted}
+						handleIsRecording={handleIsRecording}
+						handleStartRecording={handleStartRecording}
+					/>
+				</div>
+			</div>
+
+			<div className="second-level-header">
+				<Calendar />
+
+				{!doneSummarizing ? (
+					<div className="main-options">
+						<SelectModelOptions />
+						<button
+							className="summarize-button"
+							onClick={handleSummarize}
+							disabled={isRecording}
+							type="button"
+						>
+							<b>SUMMARIZE</b>
+							<AutoAwesomeIcon />
+						</button>
+					</div>
+				) : (
+					<ExportButton />
+				)}
+			</div>
+
+			<div className="content">
+				<TextField
+					isRecording={isRecording}
+					text={transcript}
+					handleTextChange={setTranscript}
+					placeHolder="Start recording or type notes here..."
+				/>
+				<TextField
+					isRecording={isRecording}
+					text={summary}
+					handleTextChange={setSummary}
+					placeHolder="Summary..."
+				/>
+			</div>
+
+			{/* Footer */}
+			<div className="footer">
+				<img src={logo} alt="Pulse Notes Logo" />
+			</div>
+		</div>
+	);
 }
 
 export default TranscriptionPage;

@@ -1,0 +1,78 @@
+.patient-name-input {
+	display: flex;
+	align-items: center;
+	gap: 0.5rem;
+	background: 1px solid;
+}
+
+.button-inline {
+	display: flex;
+	align-items: center;
+	gap: 0.4rem;
+}
+
+.timer {
+	display: inline-flex;
+	align-items: center;
+	justify-content: center;
+	gap: 0.2rem;
+}
+
+.model-select {
+	display: inline-flex;
+	align-items: center;
+	justify-content: center;
+	gap: 2rem;
+}
+
+.calendar {
+	padding-left: 45px;
+	gap: 5px;
+}
+
+/* Each column */
+.text-area-container {
+	flex: 1 1 0;
+	min-width: 0;
+	display: flex;
+	flex-direction: column;
+}
+
+/* The textarea */
+.text-area {
+	width: 100%;
+	height: 100%;
+	box-sizing: border-box;
+	padding: 20px;
+	border-radius: 18px;
+	border: 2px solid #ccc;
+	font-size: 18px;
+	resize: none;
+	outline: none;
+	background-color: #fafafa;
+	transition: background-color 0.3s ease;
+}
+
+.text-area.disabled {
+	background-color: #d8d8d8;
+}
+
+.blinking-dot {
+	width: 10px;
+	height: 10px;
+	margin-right: 8px;
+	padding-right: 4%;
+	background-color: red;
+	border-radius: 50%;
+	animation: blink 1.3s infinite ease-in-out;
+}
+
+@keyframes blink {
+	0%,
+	100% {
+		opacity: 0;
+	}
+	50% {
+		opacity: 1;
+	}
+}
