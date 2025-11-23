@@ -9,4 +9,4 @@ class ModelInterface(ABC):
     def generateSummary(self, prompt: str, input: str):
         pass
 
-    # If in the future we want to add a "Diagnosis helper" method we would add that here
+    # If in the future we want to add a "Diagnosis helper" method we would add that over here
