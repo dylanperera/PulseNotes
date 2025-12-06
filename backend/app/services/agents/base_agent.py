@@ -1,6 +1,6 @@
 from abc import ABC, abstractmethod
 
-from ...models.summarizer.base_llm_interface import ModelInterface
+from ...models.summarizer.adapters.base_llm_interface import ModelInterface
 
 
 ### Base Agent class/interface which other types of agents (summarization, diagnostic, etc.,) will inherit from
