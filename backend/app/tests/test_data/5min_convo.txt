@@ -1,3 +1,5 @@
+Using the transcript below, create a SOAP note with bullet points.
+
 PATIENT: So… last time you suggested I try not to check my heart rate on my smartwatch every couple of hours, which I agreed with, and I really did try. But honestly, it’s been harder than I expected. I’ve still been checking it more often than I probably should. (pause) It’s weird because the numbers are okay, but I feel more on edge than I thought I would. [00:01:00]
 
 DOCTOR: When you say “on edge,” do you mean physically or more emotionally?

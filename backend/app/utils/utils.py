@@ -39,3 +39,9 @@ def stream_response(response_stream):
 
     print()  # newline at end of stream
 
+
+# def stream_response(response_stream):
+#     for chunk in response_stream:
+#         delta = chunk['choices'][0]['delta']
+#         if 'content' in delta:
+#             print(delta['content'], end='', flush=True)

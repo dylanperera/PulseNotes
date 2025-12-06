@@ -1,6 +1,9 @@
-from base_agent import Agent
 import json
 from pathlib import Path
+
+from base_agent import Agent
+
+from ...models.summarizer.adapters.llama_cpp_adapter import LlamaCppAdapter
 
 # This would change based on user settings (only english focused for now)
 LOCALE = json.loads(Path("agents/localization/en.json").read_text())
@@ -8,38 +11,54 @@ LOCALE = json.loads(Path("agents/localization/en.json").read_text())
 class SummarizationAgent(Agent):
     
     AGENT_ID = "summarization"
-    #TEXT_WORD_LIMIT = 0
-    
-    def __init__(self, model_name):
-        self.model_name = model_name
 
-    # Type of Agent
+
+    def __init__(self, provider_name, model_name):
+        self._model_name = model_name
+        self._provider_name = provider_name
+
+        if(provider_name == "llama.cpp"):
+            self.service_provider = LlamaCppAdapter(model_name)
+        
+
+    # Base Agent Required Properties:
+    
     @property
-    def id(self):
+    def id(self) -> str:
         return self.AGENT_ID
 
-    # Name of Agent
     @property
-    def name(self):
-        LOCALE[self.AGENT_ID].name
+    def name(self) -> str:
+        return LOCALE[self.AGENT_ID]["name"]
 
-    # Short description of Agent
     @property
-    def short_description(self):
-        LOCALE[self.AGENT_ID].short_description
-    
-    # Long description of Agent
-    @property
-    def description(self):
-        LOCALE[self.AGENT_ID].long_description
+    def short_description(self) -> str:
+        return LOCALE[self.AGENT_ID]["short_description"]
 
-    
-    # Get name of model being used
+    @property
+    def description(self) -> str:
+        return LOCALE[self.AGENT_ID]["long_description"]
+
+    @property
+    def loading_message(self) -> str:
+        return LOCALE[self.AGENT_ID]["loading_message"]
+
+
+    # Provider + Model:
+
     @property
     def model_name(self) -> str:
-        return self.model_name
-
-    # Optional default loading message when processing/completing task
+        return self._model_name
+        
     @property
-    def loading_message(self):
-        return LOCALE[self.AGENT_ID].loading_message
+    def provider_name(self) -> str:
+        return self._provider_name
+
+    def generate_streamed_summary(self, inputMessage: str):
+        prompt = ""
+        summarizedTranscript = self.service_provider.generate_streamed_summary(prompt, inputMessage)
+        return summarizedTranscript
+
+
+
+    
