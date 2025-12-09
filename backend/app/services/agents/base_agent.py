@@ -10,13 +10,9 @@ class Agent(ABC):
         super().__init__()
 
     # Unique Agent ID ("summarization", "diagnostic", etc.,)
-    def id(self) -> str:
-        pass
-
-    # Get name of model being used
     @property
     @abstractmethod
-    def service_provider(self) -> ModelInterface:
+    def id(self) -> str:
         pass
     
     # Name of Agent
@@ -37,10 +33,10 @@ class Agent(ABC):
     def description(self) -> str:
         pass
 
-    # Provider (LlamaCpp, Ollama, OpenAI, etc.,)
+    # Provider (LlamaCpp, Ollama, OpenAI, etc.,) id
     @property
     @abstractmethod
-    def provider_name(self) -> str:
+    def provider_id(self) -> str:
         pass
     
     # Get name of model being used
