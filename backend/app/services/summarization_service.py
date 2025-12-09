@@ -4,6 +4,7 @@ from .agents.summarization_agent import SummarizationAgent
 class SummarizationService():
 
     # In the constructor we'd create the agent object passing the provider and model names
+    # Need to instantiate/create the ModelInterface itself here
     def __init__(self, provider_name, model_name):
         self.summarization_agent = SummarizationAgent(provider_name, model_name)
 
