@@ -7,7 +7,7 @@ from llama_cpp import Llama
 
 class LlamaCppInterface(ModelInterface):
 
-    def __init__(self, model_name):
+    def __init__(self, model_name:str):
         self.num_threads = max(multiprocessing.cpu_count() // 2, 1)  # Use half the cores available
 
         # Select correct model given the model name from user
@@ -24,7 +24,7 @@ class LlamaCppInterface(ModelInterface):
 
         output = self._summarize_transcript(prompt, input, False)
         
-        stream_response(output)
+        return output 
 
     # Generate summary with streaming enabled
     def generate_streamed_summary(self, prompt: str, input: str):

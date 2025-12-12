@@ -33,13 +33,7 @@ class Agent(ABC):
     def description(self) -> str:
         pass
 
-    # Provider (LlamaCpp, Ollama, OpenAI, etc.,) id
-    @property
-    @abstractmethod
-    def provider_id(self) -> str:
-        pass
-    
-    # Get name of model being used
+    # Name of model being used
     @property
     @abstractmethod
     def model_name(self) -> str:
