@@ -25,16 +25,12 @@ class SummarizationService():
     def _format_input(self, raw_text):
         pass
 
-    # Have a private method to format the output
-    def _format_output(self, summarized_text):
-        pass
 
     # Have a method to generate the summary, by calling the agent.summarize
     def generate_streamed_summary(self, raw_text, prompt):
         formatted_input = self._format_input(raw_text)
         result = self.summarization_agent.generate_streamed_summary(formatted_input, prompt)
-        output = self._format_output(result)
 
-        return output
+        return result
 
     

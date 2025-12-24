@@ -1,7 +1,7 @@
 import multiprocessing
 
 from app.utils.utils import get_model_path, stream_response
-from base_llm_interface import ModelInterface
+from .base_llm_interface import ModelInterface
 from llama_cpp import Llama
 
 
@@ -36,7 +36,18 @@ class LlamaCppInterface(ModelInterface):
     # Helpder method to summarize transcript
     def _summarize_transcript(self, prompt: str, input: str, stream: bool):
 
-        output = self.llm.create_chat_completion(messages=[prompt, input],
+        messages = [
+            {
+                "role": "system",
+                "content": prompt   # prompt
+            },
+            {
+                "role": "user",
+                "content": input
+            }
+        ]
+
+        output = self.llm.create_chat_completion(messages=messages,
                                                  temperature=0.0,                # NO creativity. Pure factual extraction.
                                                  top_p=0.9,                      # Keep sampling stable.
                                                  min_p=0.05,                     # Helps avoid weird token drops (q4 models)

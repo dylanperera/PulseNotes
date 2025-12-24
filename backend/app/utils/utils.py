@@ -7,7 +7,7 @@ def get_model_path(model_name):
     # Go up to app/
     app_dir = utils_dir.parent
     # Model folder under backend/
-    model_path = app_dir / "models" / "llm" / "model_ggufs" / model_name
+    model_path = app_dir / "models" / "summarizer" / "model_ggufs" / model_name
     return model_path
 
 def get_test_data_path(file_name):
