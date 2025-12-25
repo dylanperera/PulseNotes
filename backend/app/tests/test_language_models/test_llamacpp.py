@@ -79,7 +79,7 @@ class TestLlamaCPP(unittest.TestCase):
 
         llama_cpp_adapter = LlamaCppInterface(self.LLAMA_1)
 
-        llama_cpp_adapter.generate_streamed_summary(self.prompt, file.read())
+        output = llama_cpp_adapter.generate_streamed_summary(self.prompt, file.read())
        
         end_time = time.time()
         

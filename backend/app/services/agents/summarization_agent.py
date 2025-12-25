@@ -43,11 +43,29 @@ class SummarizationAgent(Agent):
         
         return prompt
 
-    def generate_streamed_summary(self, formatted_input: str, prompt: str):
+    def generator_function_get_next_token(self, prompt:str, formatted_input: str):
+        # Get token from the transcript
         prompt = self._generate_prompt(prompt)
-        summarizedTranscript = self._model_interface.generate_streamed_summary(prompt, formatted_input)
-        return summarizedTranscript
+        response_stream = self._model_interface.generate_streamed_summary(prompt, formatted_input)
 
+        for part in response_stream:
+            token = None
+
+            # llama.cpp streaming formats
+            token = (
+                part.get("choices", [{}])[0]
+                    .get("delta", {})
+                    .get("content")
+                or part.get("choices", [{}])[0].get("text")
+                or part.get("token", {}).get("text")
+            )
+
+            if not token:
+                continue
+
+            yield token
+        
+        
 
 
     

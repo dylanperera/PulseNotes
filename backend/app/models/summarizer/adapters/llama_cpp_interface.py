@@ -31,9 +31,11 @@ class LlamaCppInterface(ModelInterface):
         
         output = self._summarize_transcript(prompt, input, True)
 
-        stream_response(output)
+        return output
 
-    # Helpder method to summarize transcript
+        #stream_response(output)
+
+    # Helper method to summarize transcript
     def _summarize_transcript(self, prompt: str, input: str, stream: bool):
 
         messages = [
@@ -47,6 +49,8 @@ class LlamaCppInterface(ModelInterface):
             }
         ]
 
+
+        # This returns a generator object
         output = self.llm.create_chat_completion(messages=messages,
                                                  temperature=0.0,                # NO creativity. Pure factual extraction.
                                                  top_p=0.9,                      # Keep sampling stable.

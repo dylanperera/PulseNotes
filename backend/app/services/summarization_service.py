@@ -26,11 +26,10 @@ class SummarizationService():
         pass
 
 
-    # Have a method to generate the summary, by calling the agent.summarize
-    def generate_streamed_summary(self, raw_text, prompt):
+    # Get the summary generator object
+    def get_summary_generator_object(self, raw_text, prompt):
         formatted_input = self._format_input(raw_text)
-        result = self.summarization_agent.generate_streamed_summary(formatted_input, prompt)
-
-        return result
+        summary_generator_object = self.summarization_agent.generator_function_get_next_token(formatted_input, prompt)
+        return summary_generator_object
 
     
