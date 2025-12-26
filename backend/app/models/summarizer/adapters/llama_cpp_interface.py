@@ -14,6 +14,7 @@ class LlamaCppInterface(ModelInterface):
 
         self.llm = Llama(
             model_path= str(get_model_path(model_name)),
+            verbose=False,
             n_gpu_layers=-1,        # Full Metal acceleration
             n_threads=self.num_threads,
             n_ctx=4096              # Context window

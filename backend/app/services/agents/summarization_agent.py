@@ -1,7 +1,7 @@
 import json
 from pathlib import Path
 
-from base_agent import Agent
+from .base_agent import Agent
 
 from ...models.summarizer.adapters.base_llm_interface import ModelInterface
 
@@ -48,16 +48,14 @@ class SummarizationAgent(Agent):
         prompt = self._generate_prompt(prompt)
         response_stream = self._model_interface.generate_streamed_summary(prompt, formatted_input)
 
-        for part in response_stream:
+        for chunk in response_stream:
             token = None
 
             # llama.cpp streaming formats
             token = (
-                part.get("choices", [{}])[0]
-                    .get("delta", {})
-                    .get("content")
-                or part.get("choices", [{}])[0].get("text")
-                or part.get("token", {}).get("text")
+                chunk.get("choices", [{}])[0].get("delta", {}).get("content")
+               # or chunk.get("choices", [{}])[0].get("text")
+               # or chunk.get("token", {}).get("text")
             )
 
             if not token:

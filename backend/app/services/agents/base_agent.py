@@ -1,8 +1,5 @@
 from abc import ABC, abstractmethod
 
-from ...models.summarizer.adapters.base_llm_interface import ModelInterface
-
-
 ### Base Agent class/interface which other types of agents (summarization, diagnostic, etc.,) will inherit from
 class Agent(ABC):
 
@@ -33,11 +30,6 @@ class Agent(ABC):
     def description(self) -> str:
         pass
 
-    # Name of model being used
-    @property
-    @abstractmethod
-    def model_name(self) -> str:
-        pass
 
     # Optional default loading message when processing/completing tasks
     @property

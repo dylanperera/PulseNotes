@@ -27,7 +27,7 @@ class SummarizationService():
 
 
     # Get the summary generator object
-    def get_summary_generator_object(self, raw_text, prompt):
+    def get_summary_generator_object(self, prompt, raw_text):
         formatted_input = self._format_input(raw_text)
         summary_generator_object = self.summarization_agent.generator_function_get_next_token(formatted_input, prompt)
         return summary_generator_object
