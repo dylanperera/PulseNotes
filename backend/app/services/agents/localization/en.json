@@ -1,9 +1,0 @@
-{
-    "summarization": {
-      "name": "Summarization Agent",
-      "short_description": "Generates structured clinical summaries.",
-      "long_description": "Generates structured clinical summaries given the transcript between doctor and patient",
-      "loading_message": "Generating Text Summarization"
-    }
-  }
-  
