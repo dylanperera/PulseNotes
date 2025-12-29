@@ -1,3 +1,4 @@
+import asyncio
 import json
 from pathlib import Path
 
@@ -38,12 +39,58 @@ class SummarizationAgent(Agent):
 
     def _generate_prompt(self, prompt:str=None) -> str:
         if(prompt == None):
-            # select and return a Jinja prompt
-            pass
+            prompt = """
+        You are a clinical documentation assistant. Your job is to create a concise clinical SUMMARY and SOAP note based ONLY on what is stated in the conversation. You MUST NOT add, infer, or guess any medical details.
+
+        STRICT RULES (DO NOT BREAK THESE):
+        - Do NOT diagnose anything (no anxiety disorder, depression, cardiomyopathy, etc.).
+        - Do NOT suggest or imply causes of symptoms.
+        - Do NOT recommend treatments, coping strategies, lifestyle changes, or follow-up plans.
+        - Do NOT add tests, referrals, or medical actions unless explicitly stated by the doctor.
+        - Do NOT state or invent vital signs, normal results, abnormal results, or physical exam findings.
+        - Do NOT expand the plan beyond what the doctor actually said.
+        - Do NOT use terms like “should,” “needs to,” “likely,” “could indicate,” or similar inference language.
+
+        ALLOWED:
+        - ONLY describe what the patient and doctor explicitly said.
+        - You MAY summarize patterns using neutral phrasing such as:
+        “Based on the patient’s report…” 
+        “Symptoms tend to occur during…”
+        “The patient describes…”
+
+        FORMAT REQUIREMENTS:
+
+        SUMMARY (5–7 sentences):
+        - Include major symptoms, patterns, triggers, emotional themes, sleep issues, stressors, and patient goals.
+        - Keep it factual and clinically neutral.
+        - DO NOT give interpretations or advice.
+
+        SOAP NOTE:
+
+        Subjective:
+        - List ONLY patient-reported symptoms, stressors, emotional themes, sleep patterns, and concerns.
+        - No interpretations.
+
+        Objective:
+        - ONLY include objective findings if explicitly spoken by the doctor.
+        - If none were discussed, write: “No objective findings were discussed.”
+
+        Assessment:
+        - Summarize symptom patterns WITHOUT diagnosing or giving medical explanations.
+        - Use ONLY neutral phrasing, e.g., “Based on the patient’s report, symptoms tend to occur during…”
+        - Do NOT list any medical conditions.
+
+        Plan:
+        - ONLY include plan items explicitly stated by the doctor.
+        - If the doctor did not provide specific next steps, write:
+        “No specific plan was discussed in this conversation.”
+
+        Your output MUST stay strictly faithful to the transcript with zero added content.
+    """
         
         return prompt
 
-    def generator_function_get_next_token(self, prompt:str, formatted_input: str):
+    async def generator_function_get_next_token(self, prompt:str, formatted_input: str):
         # Get token from the transcript
         prompt = self._generate_prompt(prompt)
         response_stream = self._model_interface.generate_streamed_summary(prompt, formatted_input)
@@ -62,6 +109,9 @@ class SummarizationAgent(Agent):
                 continue
 
             yield token
+
+            # Allow for loop flushing - this is so the text appears as a stream on the front-end
+            await asyncio.sleep(0)
         
         
 
