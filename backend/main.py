@@ -39,10 +39,6 @@ html = """
 """
 
 
-@app.get("/")
-async def get():
-    return HTMLResponse(html)
-
 # Endpoint to summarize text
 # Input: Transcript -> Given in one go
 # Output: Summary -> Streamed back 
