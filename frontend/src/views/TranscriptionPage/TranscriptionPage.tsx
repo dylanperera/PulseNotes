@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import "./TranscriptionPage.css";
 import AutoAwesomeIcon from "@mui/icons-material/AutoAwesome";
 import logo from "../../assets/images/PulseNotesTransparent.png";
@@ -10,8 +10,18 @@ import RecordingOptions from "../../Components/RecordingOptions";
 import SelectModelOptions from "../../Components/SelectModelOptions";
 import TextField from "../../Components/TextField";
 import Timer from "../../Components/Timer";
+import useWebSocket, { ReadyState } from "react-use-websocket";
+
+type WSMessage = {
+	type: string;
+	payload: string;
+}
 
 function TranscriptionPage() {
+
+	// TODO: Look into changing this to be dynamic just in case a port is blocked
+  	const WS_URL = "http://127.0.0.1:8000/ws" 
+
 	const [isRecording, setIsRecording] = useState(false);
 	const [recordingStarted, setRecordingStarted] = useState(false);
 
@@ -19,6 +29,16 @@ function TranscriptionPage() {
 	const [summary, setSummary] = useState("");
 
 	const [doneSummarizing, setDoneSummarizing] = useState(false);
+
+	// Create websocket - There will be one web socket for both transcription and summarization
+	// This is to save on memory and latency (multiplexing)
+	const { sendJsonMessage, lastJsonMessage, readyState } = useWebSocket<WSMessage>(
+		WS_URL,
+		{
+			share: false,
+			shouldReconnect: () => true,
+		},
+  	)
 
 	const handleStartRecording = () => {
 		setRecordingStarted(!recordingStarted);
@@ -28,13 +48,37 @@ function TranscriptionPage() {
 		setIsRecording(!isRecording);
 	};
 
-	const handleSummarize = () => {
-		if (!isRecording) {
-			alert("Summarization service gets called");
+	useEffect(() => {
+
+		console.log(lastJsonMessage);
+		
+		if(!lastJsonMessage) return;
+
+		// if the lastjsonmessagetype is summary_token
+		if(lastJsonMessage.type === "summary_token"){
+			// get the payload, and add it to the text area for the summary
+			setSummary((s) => s + lastJsonMessage.payload)
+
+		} else if (lastJsonMessage.type === "summary_token_end") {
+			console.log("Here")
+			setDoneSummarizing(true);
 		}
 
-		setDoneSummarizing(true);
+
+  	}, [lastJsonMessage])
+	
+
+	const handleSummarizeClick = () => {
+		if (!isRecording && readyState === ReadyState.OPEN) {
+			sendJsonMessage({
+				type:"transcription_chunk",
+				payload: transcript
+			})
+		}
+
+		// handle when readystate is not open
 	};
+
 
 	return (
 		<div className="app-container">
@@ -67,7 +111,7 @@ function TranscriptionPage() {
 						<SelectModelOptions />
 						<button
 							className="summarize-button"
-							onClick={handleSummarize}
+							onClick={handleSummarizeClick}
 							disabled={isRecording}
 							type="button"
 						>

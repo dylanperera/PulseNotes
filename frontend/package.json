@@ -24,6 +24,7 @@
 		"react-pro-sidebar": "^1.1.0",
 		"react-router-dom": "^7.9.5",
 		"react-scripts": "5.0.1",
+		"react-use-websocket": "^4.13.0",
 		"typescript": "^4.9.5",
 		"web-vitals": "^2.1.4"
 	},
