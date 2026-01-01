@@ -49,8 +49,6 @@ function TranscriptionPage() {
 	};
 
 	useEffect(() => {
-
-		console.log(lastJsonMessage);
 		
 		if(!lastJsonMessage) return;
 
@@ -60,7 +58,6 @@ function TranscriptionPage() {
 			setSummary((s) => s + lastJsonMessage.payload)
 
 		} else if (lastJsonMessage.type === "summary_token_end") {
-			console.log("Here")
 			setDoneSummarizing(true);
 		}
 
