@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useRef, useEffect } from "react";
 import "./TranscriptionPage.css";
 import AutoAwesomeIcon from "@mui/icons-material/AutoAwesome";
 import logo from "../../assets/images/PulseNotesTransparent.png";
@@ -28,7 +28,11 @@ function TranscriptionPage() {
 	const [transcript, setTranscript] = useState("");
 	const [summary, setSummary] = useState("");
 
-	const [doneSummarizing, setDoneSummarizing] = useState(false);
+	const [isLoading, setIsLoading] = useState(false); // Loading state for summary
+	const hasStarted = useRef(false) // ref to check if recording has started summarizing (more of a safe-guard to remove the loading spinner)
+
+	const [isGeneratingSummary, setIsGeneratingSummary] = useState(false);
+
 
 	// Create websocket - There will be one web socket for both transcription and summarization
 	// This is to save on memory and latency (multiplexing)
@@ -52,28 +56,37 @@ function TranscriptionPage() {
 		
 		if(!lastJsonMessage) return;
 
-		// if the lastjsonmessagetype is summary_token
 		if(lastJsonMessage.type === "summary_token"){
 			// get the payload, and add it to the text area for the summary
+			if(hasStarted.current === true){
+				hasStarted.current = false;
+				setIsLoading(false);
+			}
 			setSummary((s) => s + lastJsonMessage.payload)
 
 		} else if (lastJsonMessage.type === "summary_token_end") {
-			setDoneSummarizing(true);
+			setIsGeneratingSummary(false);
 		}
 
 
-  	}, [lastJsonMessage])
+  	}, [lastJsonMessage]);
 	
-
 	const handleSummarizeClick = () => {
 		if (!isRecording && readyState === ReadyState.OPEN) {
 			sendJsonMessage({
 				type:"transcription_chunk",
 				payload: transcript
 			})
+
 		}
 
+		hasStarted.current = true;
+		setIsLoading(true);
+		setIsGeneratingSummary(true);
+
+
 		// handle when readystate is not open
+		
 	};
 
 
@@ -103,33 +116,35 @@ function TranscriptionPage() {
 			<div className="second-level-header">
 				<Calendar />
 
-				{!doneSummarizing ? (
-					<div className="main-options">
-						<SelectModelOptions />
+				
+					
+				<div className="main-options">
+						{/* <SelectModelOptions /> */}
 						<button
-							className="summarize-button"
+							className={`summarize-button ${ (isRecording === true || isGeneratingSummary === true) ? 'summarize-button-off' : 'summarize-button-on' }`}
 							onClick={handleSummarizeClick}
-							disabled={isRecording}
+							disabled={(isRecording === true || isGeneratingSummary === true)}
 							type="button"
 						>
 							<b>SUMMARIZE</b>
 							<AutoAwesomeIcon />
 						</button>
-					</div>
-				) : (
-					<ExportButton />
-				)}
+					<ExportButton/>
+				</div>
+
 			</div>
 
 			<div className="content">
 				<TextField
 					isRecording={isRecording}
+					isLoading={isLoading}
 					text={transcript}
 					handleTextChange={setTranscript}
 					placeHolder="Start recording or type notes here..."
 				/>
 				<TextField
 					isRecording={isRecording}
+					isLoading={isLoading}
 					text={summary}
 					handleTextChange={setSummary}
 					placeHolder="Summary..."

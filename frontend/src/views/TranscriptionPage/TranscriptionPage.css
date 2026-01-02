@@ -63,32 +63,36 @@ img {
 	box-sizing: border-box;
 }
 
-/* The summarize button code is mostly from chatgpt */
+
 .summarize-button {
 	position: relative;
 	display: inline-flex;
 	align-items: center;
 	gap: 8px;
 
-	background: rgba(3, 3, 5, 0.95);
 	color: #fff;
 	border: none;
 	border-radius: 25px;
 	padding: 10px 20px;
 	font-size: 16px;
 	font-weight: 500;
-	cursor: pointer;
 	z-index: 0;
 	overflow: hidden;
+}
+
+.summarize-button-on{
+	background: rgba(3, 3, 5, 0.95);
+	cursor: pointer;
 	transition: transform 0.2s ease;
 }
 
-.summarize-button::before {
+.summarize-button-on::before {
 	content: "";
 	position: absolute;
 	inset: 0;
 	border-radius: inherit;
 	padding: 3px;
+	transition: background 0.4s ease;
 	background: linear-gradient(135deg, #7b61ff, #4adede, #8ef6ff);
 	-webkit-mask:
 		linear-gradient(#fff 0 0) content-box,
@@ -98,12 +102,12 @@ img {
 	z-index: -1;
 }
 
-.summarize-button:hover {
+.summarize-button-on:hover {
 	transform: translateY(-2px);
 	filter: brightness(1.1);
 }
 
-.summarize-button:active {
+.summarize-button-on:active {
 	transform: scale(0.97); /* slightly shrink */
 	filter: brightness(0.9); /* darker look */
 	transition:
@@ -111,12 +115,8 @@ img {
 		filter 0.05s ease;
 }
 
-.summarize-button:hover::before {
-	background: linear-gradient(135deg, #9b8cff, #5affd0, #8ef6ff);
-	transition: background 0.4s ease;
-}
 
-.summarize-button::before {
+.summarize-button-on::before {
 	background-size: 300% 300%;
 	animation: gradientShift 4s ease infinite;
 }
@@ -139,4 +139,9 @@ img {
 	align-items: center;
 	justify-content: center;
 	font-size: 18px;
+}
+
+.summarize-button-off {
+	background: rgba(189, 189, 189, 0.95);
+	cursor: default;
 }
