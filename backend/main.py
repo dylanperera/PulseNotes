@@ -1,56 +1,34 @@
-from fastapi import FastAPI, WebSocket
-from fastapi.responses import HTMLResponse
+from fastapi import FastAPI, WebSocket, WebSocketDisconnect
 from app.controllers.summarization_controller import SummarizationController
 
 app = FastAPI()
 
 
-html = """
-<!DOCTYPE html>
-<html>
-    <head>
-        <title>Chat</title>
-    </head>
-    <body>
-        <h1>WebSocket Chat</h1>
-        <form action="" onsubmit="sendMessage(event)">
-            <textarea id="messageText" autocomplete="off" rows="20" cols="20"></textarea>
-            <button>Send</button>
-        </form>
-        <textarea id="response" autocomplete="off" rows="20" cols="20"></textarea>
+# Generic websocket endpoint
+@app.websocket("/ws")
+async def web_socket_endpoint(websocket: WebSocket):
 
-        <script>
-            var ws = new WebSocket("ws://localhost:8000/summarize");
-            ws.onmessage = function(event) {
-                var messages = document.getElementById('response')
-                messages.value += event.data
-                
-            };
-            function sendMessage(event) {
-                var input = document.getElementById("messageText")
-                console.log(input.value)
-                ws.send(input.value)
-                input.value = ''
-                event.preventDefault()
-            }
-        </script>
-    </body>
-</html>
-"""
+    try:
 
+        await websocket.accept()
 
-@app.get("/")
-async def get():
-    return HTMLResponse(html)
+        summarization_controller = SummarizationController(websocket)
 
-# Endpoint to summarize text
-# Input: Transcript -> Given in one go
-# Output: Summary -> Streamed back 
-@app.websocket("/summarize")
-async def summary_websocket(websocket: WebSocket):
+        while True:
+            msg = await websocket.receive_json()
+            msg_type = msg["type"]
 
-    summarization_controller = SummarizationController(websocket)
+            if msg_type == "transcription_chunk":
+                await summarization_controller.summarize_transcript(msg["payload"])
 
-    await summarization_controller.connect_ws(websocket)
+            elif msg_type == "close":
+                break
 
-    await summarization_controller.summarize_transcript()
+            else:
+                pass # Should handle this error
+
+    except WebSocketDisconnect:
+        print("WebSocket disconnected")
+
+    
+    await websocket.close()

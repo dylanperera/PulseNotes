@@ -6,8 +6,8 @@ from fastapi import WebSocket
 
 class Controller(ABC):
 
-    async def connect_ws(self, websocket: WebSocket):
-        await websocket.accept()
+    # async def connect_ws(self, websocket: WebSocket):
+    #     await websocket.accept()
 
     def disconnect_ws(self, websocket: WebSocket):
        pass
