@@ -107,7 +107,7 @@ function TranscriptionPage() {
 					<div className="main-options">
 						<SelectModelOptions />
 						<button
-							className="summarize-button"
+							className={`summarize-button ${ isRecording ? 'summarize-button-off' : 'summarize-button-on' }`}
 							onClick={handleSummarizeClick}
 							disabled={isRecording}
 							type="button"
