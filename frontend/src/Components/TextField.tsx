@@ -1,10 +1,11 @@
+import { RefObject } from "react";
 import "../assets/styles/globals.css";
 
 type TextFieldProps = {
 	text: string;
 	handleTextChange: (text: string) => void;
 	isRecording: boolean;
-	isLoading?: boolean;
+	isLoading?: boolean
 	placeHolder: string;
 };
 

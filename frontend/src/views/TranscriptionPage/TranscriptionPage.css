@@ -78,12 +78,12 @@ img {
 	font-weight: 500;
 	z-index: 0;
 	overflow: hidden;
-	transition: transform 0.2s ease;
 }
 
 .summarize-button-on{
 	background: rgba(3, 3, 5, 0.95);
 	cursor: pointer;
+	transition: transform 0.2s ease;
 }
 
 .summarize-button-on::before {
@@ -92,6 +92,7 @@ img {
 	inset: 0;
 	border-radius: inherit;
 	padding: 3px;
+	transition: background 0.4s ease;
 	background: linear-gradient(135deg, #7b61ff, #4adede, #8ef6ff);
 	-webkit-mask:
 		linear-gradient(#fff 0 0) content-box,
@@ -114,10 +115,6 @@ img {
 		filter 0.05s ease;
 }
 
-.summarize-button-on:hover::before {
-	background: linear-gradient(135deg, #9b8cff, #5affd0, #8ef6ff);
-	transition: background 0.4s ease;
-}
 
 .summarize-button-on::before {
 	background-size: 300% 300%;
@@ -137,7 +134,7 @@ img {
 }
 
 /* Icon styling */
-.summarize-button-on .icon {
+.summarize-button .icon {
 	display: flex;
 	align-items: center;
 	justify-content: center;

@@ -13,6 +13,8 @@ class SummarizationController(Controller):
 
         summary_stream = summarization_service.get_summary_generator_object(raw_text=raw_text)
 
+        await self.websocket.send_json({"type":"summary_token_start", "payload":"start"})
+
         async for it in summary_stream:
             await self.websocket.send_json({"type":"summary_token", "payload":it})
 
