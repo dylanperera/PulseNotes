@@ -76,3 +76,10 @@
 		opacity: 1;
 	}
 }
+
+.summary-loading {
+    background-image: url("../images/fade-stagger-circles.svg");
+    background-size: 75px 75px;
+    background-position: center;
+    background-repeat: no-repeat;
+}

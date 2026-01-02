@@ -28,6 +28,7 @@ function TranscriptionPage() {
 	const [transcript, setTranscript] = useState("");
 	const [summary, setSummary] = useState("");
 
+	const [isLoading, setIsLoading] = useState(false);
 	const [doneSummarizing, setDoneSummarizing] = useState(false);
 
 	// Create websocket - There will be one web socket for both transcription and summarization
@@ -71,9 +72,14 @@ function TranscriptionPage() {
 				type:"transcription_chunk",
 				payload: transcript
 			})
+
 		}
 
+		setIsLoading(true);
+
+
 		// handle when readystate is not open
+		
 	};
 
 
@@ -130,6 +136,7 @@ function TranscriptionPage() {
 				/>
 				<TextField
 					isRecording={isRecording}
+					isLoading={isLoading}
 					text={summary}
 					handleTextChange={setSummary}
 					placeHolder="Summary..."
