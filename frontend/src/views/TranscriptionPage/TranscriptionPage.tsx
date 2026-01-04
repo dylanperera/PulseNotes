@@ -136,17 +136,19 @@ function TranscriptionPage() {
 
 			<div className="content">
 				<TextField
+					id="transcript"
 					isRecording={isRecording}
 					isLoading={isLoading}
 					text={transcript}
-					handleTextChange={setTranscript}
+					setContent={setTranscript}
 					placeHolder="Start recording or type notes here..."
 				/>
 				<TextField
+					id="id"
 					isRecording={isRecording}
 					isLoading={isLoading}
 					text={summary}
-					handleTextChange={setSummary}
+					setContent={setSummary}
 					placeHolder="Summary..."
 				/>
 			</div>
