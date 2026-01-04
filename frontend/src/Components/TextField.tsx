@@ -1,4 +1,4 @@
-import { ChangeEvent, useEffect, useRef } from "react";
+import { useEffect, useRef } from "react";
 import "../assets/styles/globals.css";
 
 type TextFieldProps = {
