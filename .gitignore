@@ -1,4 +1,6 @@
+venv/
 .venv/
 *.gguf
 __pycache__/
 *.pyc
+venv/
