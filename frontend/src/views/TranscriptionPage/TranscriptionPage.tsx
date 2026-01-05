@@ -17,10 +17,12 @@ type WSMessage = {
 	payload: string;
 }
 
+// update something here for transcription service ws
+
 function TranscriptionPage() {
 
 	// TODO: Look into changing this to be dynamic just in case a port is blocked
-  	const WS_URL = "http://127.0.0.1:8000/ws" 
+  	const WS_URL = "http://127.0.0.1:8000/ws"
 
 	const [isRecording, setIsRecording] = useState(false);
 	const [recordingStarted, setRecordingStarted] = useState(false);
@@ -52,8 +54,9 @@ function TranscriptionPage() {
 		setIsRecording(!isRecording);
 	};
 
+	// probably one of these
 	useEffect(() => {
-		
+
 		if(!lastJsonMessage) return;
 
 		if(lastJsonMessage.type === "summary_token"){
@@ -70,7 +73,7 @@ function TranscriptionPage() {
 
 
   	}, [lastJsonMessage]);
-	
+
 	const handleSummarizeClick = () => {
 		if (!isRecording && readyState === ReadyState.OPEN) {
 			sendJsonMessage({
@@ -86,7 +89,7 @@ function TranscriptionPage() {
 
 
 		// handle when readystate is not open
-		
+
 	};
 
 
@@ -116,8 +119,8 @@ function TranscriptionPage() {
 			<div className="second-level-header">
 				<Calendar />
 
-				
-					
+
+
 				<div className="main-options">
 						{/* <SelectModelOptions /> */}
 						<button

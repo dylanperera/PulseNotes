@@ -18,8 +18,11 @@ async def web_socket_endpoint(websocket: WebSocket):
             msg = await websocket.receive_json()
             msg_type = msg["type"]
 
+            # add something for audio input
+
             if msg_type == "transcription_chunk":
                 await summarization_controller.summarize_transcript(msg["payload"])
+
 
             elif msg_type == "close":
                 break
@@ -30,5 +33,5 @@ async def web_socket_endpoint(websocket: WebSocket):
     except WebSocketDisconnect:
         print("WebSocket disconnected")
 
-    
+
     await websocket.close()
