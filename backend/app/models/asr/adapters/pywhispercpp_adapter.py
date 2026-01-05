@@ -13,7 +13,7 @@ class PyWhisperCppAdapter(TranscriptionAdapter):
             loads pywhispercpp model.. should load from cache if downloaded
         """
         print(f"[PyWhisperCppAdapter] loading whisper.cpp model via python binding library '{model}'...")
-        return Model(model)
+        return Model(model, print_progress=False)
 
     def add_audio_chunk(self, chunk: np.ndarray):
         """ buffer preprocessed numpy audio chunks. """
