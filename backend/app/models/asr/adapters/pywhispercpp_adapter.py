@@ -1,4 +1,5 @@
 from pywhispercpp.model import Model
+from queue import Queue, Empty
 import numpy as np
 from ..base_asr_interface import TranscriptionAdapter
 
@@ -7,6 +8,7 @@ class PyWhisperCppAdapter(TranscriptionAdapter):
         super().__init__(model=model)
         self.model = self._load_model(model)
         self.buffer = []
+        self.transcription_queue = Queue()
 
     def _load_model(self, model: str):
         """
@@ -30,7 +32,8 @@ class PyWhisperCppAdapter(TranscriptionAdapter):
         """clear buffered audio chunks."""
         self.buffer = []
 
-    def transcribe(self, finalize: bool = False) -> str:
+    # note: so i just realized right now, that in our process of transcribing we actually don't put it on a queue.. it might be good to put it onto the queue? just incase something goes down in the mean time?.. also maybe helps with accruracy
+    def transcribe(self, finalize: bool = False):
         """run whisper.cpp transcription on buffered audio."""
         if not self.buffer:
             return ""
@@ -39,7 +42,21 @@ class PyWhisperCppAdapter(TranscriptionAdapter):
         result = self.model.transcribe(audio)
         text = result[0].text
 
+        if not text:
+            return ""
+
+        event = {
+            "type": "finalize" if finalize else "update",
+            "text": text,
+        }
+
+        self.transcription_queue.put(event)
+
         if finalize:
             self.reset_buffer()
 
-        return text
+    def get_transcription(self, block = False, timeout=None):
+        try:
+            return self.transcription_queue.get(block=block, timeout=timeout)
+        except Empty:
+            return None
