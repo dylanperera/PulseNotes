@@ -31,24 +31,6 @@ class TranscriptionService():
         self.audio_capture.stop()
         self.transcription_adapter.transcribe(commit=True)
 
-    def transcribe_partial(self):
-        if not self.running:
-            return None
-
-        chunk = self.audio_capture.read_chunk(block=True)
-        if chunk is None:
-            return None
-
-        processed_chunk = self.audio_preprocessor.process_audio(chunk)
-        self.transcription_adapter.add_audio_chunk(processed_chunk)
-
-        text = self.transcription_adapter.transcribe(finalize=False) # transcribe from top of queue
-        if text and text.strip():
-            self.transcription_adapter.reset_buffer()
-            return text.strip()
-
-        return None
-
     def process_audio(self):
         if not self.running:
             return None
