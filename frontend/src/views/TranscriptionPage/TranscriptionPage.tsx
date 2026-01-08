@@ -17,10 +17,12 @@ type WSMessage = {
 	payload: string;
 }
 
+// update something here for transcription service ws
+
 function TranscriptionPage() {
 
 	// TODO: Look into changing this to be dynamic just in case a port is blocked
-  	const WS_URL = "http://127.0.0.1:8000/ws" 
+  	const WS_URL = "http://127.0.0.1:8000/ws"
 
 	const [isRecording, setIsRecording] = useState(false);
 	const [recordingStarted, setRecordingStarted] = useState(false);
@@ -46,31 +48,55 @@ function TranscriptionPage() {
 
 	const handleStartRecording = () => {
 		setRecordingStarted(!recordingStarted);
+
+		if (readyState === ReadyState.OPEN) {
+			sendJsonMessage({ type: "start_transcription" }); // send a message to start the transcription
+		}
 	};
 
 	const handleIsRecording = () => {
 		setIsRecording(!isRecording);
+		// this is where we actually handle the recording process, again need to do something here
+		if (readyState === ReadyState.OPEN) {
+			sendJsonMessage({
+				type: isRecording ? "stop_transcription" : "start_transcription",
+		});
+	}
 	};
 
+	// probably one of these
 	useEffect(() => {
-		
+
 		if(!lastJsonMessage) return;
 
-		if(lastJsonMessage.type === "summary_token"){
-			// get the payload, and add it to the text area for the summary
-			if(hasStarted.current === true){
-				hasStarted.current = false;
-				setIsLoading(false);
-			}
-			setSummary((s) => s + lastJsonMessage.payload)
+		switch(lastJsonMessage.type) {
+			case "transcription_update":
+				const { text, final } = lastJsonMessage.payload;
 
-		} else if (lastJsonMessage.type === "summary_token_end") {
-			setIsGeneratingSummary(false);
+				setTranscript((prev) => {
+					if (final) {
+						return prev + text + " ";
+					}
+					// partial overwrite behavior
+					return prev + text;
+				});
+			break;
+
+			case "summary_token":
+				// get the payload, and add it to the text area for the summary
+				if(hasStarted.current === true){
+					hasStarted.current = false;
+					setIsLoading(false);
+				}
+				setSummary((s) => s + lastJsonMessage.payload)
+				break
+			case "summary_token_end":
+				setIsGeneratingSummary(false);
+				break
 		}
 
-
   	}, [lastJsonMessage]);
-	
+
 	const handleSummarizeClick = () => {
 		if (!isRecording && readyState === ReadyState.OPEN) {
 			sendJsonMessage({
@@ -86,7 +112,7 @@ function TranscriptionPage() {
 
 
 		// handle when readystate is not open
-		
+
 	};
 
 
@@ -116,8 +142,8 @@ function TranscriptionPage() {
 			<div className="second-level-header">
 				<Calendar />
 
-				
-					
+
+
 				<div className="main-options">
 						{/* <SelectModelOptions /> */}
 						<button

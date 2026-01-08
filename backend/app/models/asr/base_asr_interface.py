@@ -39,3 +39,7 @@ class TranscriptionAdapter(ABC):
         if finalize=True → return final result & clear buffer.
         """
         pass
+
+    @abstractmethod
+    def get_transcription(self):
+        pass
