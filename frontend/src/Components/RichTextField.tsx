@@ -59,11 +59,7 @@ function RichTextField({
   if (!editor) return null;
 
   return (
-      <div
-    className={`rich-text-container ${
-      isRecording || isLoading ? "rich-text-disabled" : ""
-    }`}
-  >
+    <div className={`rich-text-container ${isRecording || isLoading ? "rich-text-disabled" : ""}`}>
       <div className="rich-text-toolbar">
         <button
           disabled={isRecording || isLoading}
