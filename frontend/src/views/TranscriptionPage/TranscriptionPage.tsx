@@ -11,6 +11,7 @@ import SelectModelOptions from "../../Components/SelectModelOptions";
 import TextField from "../../Components/TextField";
 import Timer from "../../Components/Timer";
 import useWebSocket, { ReadyState } from "react-use-websocket";
+import RichTextField from "../../Components/RichTextField";
 
 type WSMessage = {
 	type: string;
@@ -143,13 +144,13 @@ function TranscriptionPage() {
 					setContent={setTranscript}
 					placeHolder="Start recording or type notes here..."
 				/>
-				<TextField
-					id="id"
-					isRecording={isRecording}
-					isLoading={isLoading}
-					text={summary}
-					setContent={setSummary}
-					placeHolder="Summary..."
+				<RichTextField
+  					id="summary"
+  					text={summary}
+  					setContent={setSummary}
+  					isRecording={isRecording}
+  					isLoading={isLoading}
+  					placeHolder="Summary..."
 				/>
 			</div>
 
