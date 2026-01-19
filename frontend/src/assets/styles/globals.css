@@ -88,6 +88,7 @@
 .rich-text-container {
 	flex: 1 1 0;
 	min-width: 0;
+	min-height: 0;
 	display: flex;
 	flex-direction: column;
 }
@@ -132,6 +133,7 @@
 /* TipTap editor surface */
 .rich-text-editor {
 	flex: 1;
+	min-height: 0; 
 	border: 2px solid #ccc;
 	border-top: none;
 	border-radius: 0 0 18px 18px;
@@ -187,4 +189,8 @@
 /* Remove text caret when disabled */
 .rich-text-disabled .ProseMirror {
 	caret-color: transparent;
+}
+
+.rich-text-editor .ProseMirror {
+  height: 100%;
 }
