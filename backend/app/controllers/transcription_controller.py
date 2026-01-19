@@ -44,6 +44,5 @@ class TranscriptionController(Controller):
 
                 await asyncio.sleep(0.05)
         except asyncio.CancelledError:
-            # Clean task shutdown
             pass
 

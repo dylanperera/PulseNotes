@@ -39,12 +39,6 @@ class TranscriptionService():
         if self.running:
             self.audio_capture.resume()
 
-
-    # def stop(self):
-    #     self.running = False
-    #     self.audio_capture.stop()
-    #     self.transcription_adapter.transcribe(finalize=True)
-
     def stop(self):
         """
         Stop session and flush remaining audio.
@@ -67,18 +61,6 @@ class TranscriptionService():
         # Now stop capture
         self.audio_capture.stop()
 
-
-    # def process_audio(self):
-    #     if not self.running:
-    #         return
-
-    #     chunk = self.audio_capture.read_chunk(block=False)
-    #     if chunk is None:
-    #         return
-
-    #     processed = self.audio_preprocessor.process_audio(chunk)
-    #     self.transcription_adapter.add_audio_chunk(processed)
-    #     self.transcription_adapter.transcribe(finalize=False)
     def process_audio(self):
         """
         MUST be called repeatedly (loop / thread / WS).
@@ -95,7 +77,6 @@ class TranscriptionService():
 
         # Partial transcription
         self.transcription_adapter.transcribe(finalize=False)
-
 
     # used to just ensure the final collected audio is actually processed.. basically just cleans the last transcription
     def get_transcription(self):

@@ -42,8 +42,6 @@ class AudioCapture:
             return
 
         # clear the queue in case previous session data leaks
-        #self.audio_queue.queue.clear()
-
         # include this to make it thread safe
         while not self.audio_queue.empty():
             try:
@@ -143,7 +141,6 @@ class AudioCapture:
             self.stream.close()
             self.stream = None
 
-        #self.audio_queue.queue.clear()
         while not self.audio_queue.empty():
             try:
                 self.audio_queue.get_nowait()

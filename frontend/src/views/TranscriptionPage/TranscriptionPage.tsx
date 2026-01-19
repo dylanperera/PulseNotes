@@ -32,17 +32,11 @@ type WSMessage =
 
 type RecordingState = "idle" | "recording" | "paused";
 
-
-
-// update something here for transcription service ws
-
 function TranscriptionPage() {
 
 	// TODO: Look into changing this to be dynamic just in case a port is blocked
   	//const WS_URL = "http://127.0.0.1:8000/ws"
 	const WS_URL = "ws://127.0.0.1:8000/ws"
-	// const [isRecording, setIsRecording] = useState(false);
-	// const [recordingStarted, setRecordingStarted] = useState(false);
 
 	const [recordingState, setRecordingState] = useState<RecordingState>("idle");
 
@@ -65,28 +59,6 @@ function TranscriptionPage() {
 		},
   	)
 
-	// const handleStartRecording = () => {
-	// 	console.log("sup?")
-	// 	// this occurs only whenever the user PRESSES THE START BUTTON FOR THE FIRST TIME IN A SESSION
-	// 	setRecordingStarted(!recordingStarted);
-
-	// 	if (readyState === ReadyState.OPEN) {
-	// 		sendJsonMessage({ type: "start_transcription" }); // send a message to start the transcription
-	// 		// send a message to the backend indicating to start transcription
-	// 	}
-	// };
-
-	// const handleIsRecording = () => {
-	// 	console.log("toggling..")
-	// 	setIsRecording(!isRecording);
-	// 	// this is where we actually handle the recording process, again need to do something here
-	// 	// this gets called whenever we toggle the start and pause buttons..
-	// 	if (readyState === ReadyState.OPEN) {
-	// 		sendJsonMessage({
-	// 			type: isRecording ? "stop_transcription" : "start_transcription",
-	// 	});
-	// }
-	// };
 	const handleStartRecording = () => {
 		if (readyState !== ReadyState.OPEN) return;
 		if (recordingState !== "idle") return;
@@ -119,9 +91,6 @@ function TranscriptionPage() {
 		setRecordingState("idle");
 	};
 
-
-
-	// probably one of these
 	useEffect(() => {
 
 		if(!lastJsonMessage) return;
@@ -157,16 +126,9 @@ function TranscriptionPage() {
   	}, [lastJsonMessage]);
 
 	const handleSummarizeClick = () => {
-		if (recordingState !== "idle") return;
+		if (recordingState === "recording") return;
     	if (readyState !== ReadyState.OPEN) return;
 
-		// if (!isRecording && readyState === ReadyState.OPEN) {
-		// 	sendJsonMessage({
-		// 		type:"transcription_chunk",
-		// 		payload: transcript
-		// 	})
-
-		// }
 	    sendJsonMessage({
 			type: "transcription_chunk",
 			payload: transcript,
@@ -175,10 +137,6 @@ function TranscriptionPage() {
 		hasStarted.current = true;
 		setIsLoading(true);
 		setIsGeneratingSummary(true);
-
-
-		// handle when readystate is not open
-
 	};
 
 	const isRecording = recordingState === "recording"
