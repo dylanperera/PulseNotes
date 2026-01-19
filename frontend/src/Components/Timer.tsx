@@ -4,7 +4,6 @@ import "../assets/styles/globals.css";
 
 export default function Timer(props: {
 	isRecording: boolean;
-	recordingStarted: boolean;
 }) {
 	const [time, setTime] = useState(0);
 
@@ -18,15 +17,18 @@ export default function Timer(props: {
 				// this means that it will stay the same untill we pause and resume again
 				setTime((prev) => prev + 1);
 			}, 1000);
-		} else if (props.isRecording === false && props.recordingStarted === true) {
-			clearInterval(interval);
 		}
 
 		// When the component unmounts we want to remove the interval, so it doesnt keep running
 		return () => {
-			clearInterval(interval);
+			if (interval) {
+				clearInterval(interval);
+			}
 		};
-	}, [props.isRecording, props.recordingStarted]);
+
+
+
+	}, [props.isRecording]);
 
 	// Convert time from seconds to 00:00:00 format
 	const timeFormatted = useMemo(() => {

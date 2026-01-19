@@ -1,13 +1,13 @@
 import { PauseCircle } from "@mui/icons-material";
 import Button from "@mui/material/Button";
 
-export default function PauseUI(props: { handleIsRecording: () => void }) {
+export default function PauseUI(props: { onPause: () => void }) {
 	return (
 		<Button
 			id="demo-customized-button"
 			variant="contained"
 			disableElevation
-			onClick={props.handleIsRecording}
+			onClick={props.onPause}
 			sx={{
 				backgroundColor: "#fcfaf8",
 				transition: "background-color 0.2s ease",
@@ -22,7 +22,8 @@ export default function PauseUI(props: { handleIsRecording: () => void }) {
 			}}
 		>
 			<div className="blinking-dot"></div>
-			<PauseCircle /> <b style={{ marginLeft: "8px" }}>Pause</b>
+			<PauseCircle />
+			<b style={{ marginLeft: "8px" }}>Pause</b>
 		</Button>
 	);
 }

@@ -1,5 +1,6 @@
-from backend.app.controllers.transcription_controller import TranscriptionController
-from backend.app.services.transcription_service import TranscriptionService
+from app.controllers.transcription_controller import TranscriptionController
+from app.services.transcription_service import TranscriptionService
+from app.models.asr.adapters.pywhispercpp_adapter import PyWhisperCppAdapter
 from fastapi import FastAPI, WebSocket, WebSocketDisconnect
 from app.controllers.summarization_controller import SummarizationController
 
@@ -15,8 +16,8 @@ async def web_socket_endpoint(websocket: WebSocket):
         await websocket.accept()
 
         summarization_controller = SummarizationController(websocket)
+
         transcription_service = TranscriptionService(
-            adapter=PyWhisperCppAdapter(model="small"),
             asr_model="whispercpp"
         )
 
@@ -31,12 +32,22 @@ async def web_socket_endpoint(websocket: WebSocket):
 
             # add something for audio input
             if msg_type == "start_transcription":
+                print("recieved start transcription message from frontend")
                 await transcription_controller.start()
 
             elif msg_type == "stop_transcription":
+                print("recieved stop transcription from the frontend")
                 await transcription_controller.stop()
 
-            if msg_type == "transcription_chunk":
+            elif msg_type == "resume_transcription":
+                print("resuming transcription")
+                await transcription_controller.resume()
+
+            elif msg_type == "pause_transcription":
+                print("pausing transcription")
+                await transcription_controller.pause()
+
+            elif msg_type == "transcription_chunk":
                 await summarization_controller.summarize_transcript(msg["payload"])
 
 

@@ -9,4 +9,5 @@ dependencies = [
     "llama-cpp-python>=0.3.16",
     "pywhispercpp>=1.4.1",
     "sounddevice>=0.5.3",
+    "uvicorn>=0.40.0",
 ]

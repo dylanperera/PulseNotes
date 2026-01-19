@@ -1,6 +1,7 @@
 import asyncio
 from .base_controller import Controller
 from fastapi import WebSocket
+
 class TranscriptionController(Controller):
     def __init__(self, websocket: WebSocket, service):
         self.websocket = websocket
@@ -13,22 +14,36 @@ class TranscriptionController(Controller):
 
     async def stop(self):
         self.service.stop()
+
         if self.task:
             self.task.cancel()
+            try:
+                await self.task
+            except asyncio.CancelledError:
+                pass
+            self.task = None
+
+
+    async def pause(self):
+        self.service.pause()
+
+    async def resume(self):
+        self.service.resume()
 
     async def _run(self):
-        while True:
-            self.service.process_audio()
+        try:
+            while True:
+                self.service.process_audio()
 
-            text = self.service.get_transcription()
+                msg = self.service.get_transcription()
+                if msg:
+                    await self.websocket.send_json({
+                        "type": "transcription_token",
+                        "payload": msg
+                    })
 
-            if text:
-                await self.websocket.send_json({
-                    "type": "transcription_update",
-                    "payload": {
-                        "text": text,
-                        "final": False
-                    }
-                })
+                await asyncio.sleep(0.05)
+        except asyncio.CancelledError:
+            # Clean task shutdown
+            pass
 
-            await asyncio.sleep(0.05)
