@@ -4,3 +4,5 @@ venv/
 __pycache__/
 *.pyc
 venv/
+launch.json
+.DS_Store
