@@ -61,6 +61,7 @@ img {
 	padding: 2% 2% 1% 2%;
 	gap: 2rem;
 	box-sizing: border-box;
+	min-height: 0;
 }
 
 
