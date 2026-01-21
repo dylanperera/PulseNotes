@@ -21,7 +21,7 @@ class AudioCapture:
             running: boolean to determine if the audio capture system is running (actively recording)
             paused: boolean to determine if the audio capture system is paused (still running, but not capturing)
     """
-    def __init__(self, sample_rate=16000, channels=1, chunk_duration=3.0, dtype='float32'):
+    def __init__(self, sample_rate=16000, channels=1, chunk_duration=0.25, dtype='float32'):
         self.sample_rate = sample_rate
         self.channels = channels
         self.dtype = dtype
@@ -29,7 +29,7 @@ class AudioCapture:
         self.chunk_size = int(sample_rate * chunk_duration)
         # internal use
         self.stream = None
-        self.audio_queue = queue.Queue()
+        self.audio_queue = queue.Queue(maxsize=10) # check this.. may lead to dropped audio
         self.running = False
         self.paused = False
 
@@ -42,7 +42,12 @@ class AudioCapture:
             return
 
         # clear the queue in case previous session data leaks
-        self.audio_queue.queue.clear()
+        # include this to make it thread safe
+        while not self.audio_queue.empty():
+            try:
+                self.audio_queue.get_nowait()
+            except queue.Empty:
+                break
 
         # open audio input stream, returns an numpy array of size chunk_size of type dtype containing captured audio
         self.stream = sd.InputStream(
@@ -72,7 +77,7 @@ class AudioCapture:
         if status:
             print(status)
 
-        if self.running and not self.paused:
+        if self.running and not self.paused and not self.audio_queue.full():
             self.audio_queue.put(indata.copy())
 
 
@@ -136,7 +141,12 @@ class AudioCapture:
             self.stream.close()
             self.stream = None
 
-        self.audio_queue.queue.clear()
+        while not self.audio_queue.empty():
+            try:
+                self.audio_queue.get_nowait()
+            except queue.Empty:
+                break
+
         print("[AudioCapture] stream closed and session cleaned up.")
 
     def recieve_audio_file(self):

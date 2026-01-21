@@ -13,18 +13,32 @@ import Timer from "../../Components/Timer";
 import useWebSocket, { ReadyState } from "react-use-websocket";
 import RichTextField from "../../Components/RichTextField";
 
-type WSMessage = {
-	type: string;
-	payload: string;
-}
+type WSMessage =
+	| {
+			type: "transcription_token";
+			payload: {
+				type: "partial" | "final";
+				text: string;
+			};
+	  }
+	| {
+			type: "summary_token";
+			payload: string;
+	  }
+	| {
+			type: "summary_token_end";
+			payload: null;
+	  };
+
+type RecordingState = "idle" | "recording" | "paused";
 
 function TranscriptionPage() {
 
 	// TODO: Look into changing this to be dynamic just in case a port is blocked
-  	const WS_URL = "http://127.0.0.1:8000/ws" 
+  	//const WS_URL = "http://127.0.0.1:8000/ws"
+	const WS_URL = "ws://127.0.0.1:8000/ws"
 
-	const [isRecording, setIsRecording] = useState(false);
-	const [recordingStarted, setRecordingStarted] = useState(false);
+	const [recordingState, setRecordingState] = useState<RecordingState>("idle");
 
 	const [transcript, setTranscript] = useState("");
 	const [summary, setSummary] = useState("");
@@ -46,50 +60,86 @@ function TranscriptionPage() {
   	)
 
 	const handleStartRecording = () => {
-		setRecordingStarted(!recordingStarted);
+		if (readyState !== ReadyState.OPEN) return;
+		if (recordingState !== "idle") return;
+
+		sendJsonMessage({ type: "start_transcription" });
+		setRecordingState("recording");
 	};
 
-	const handleIsRecording = () => {
-		setIsRecording(!isRecording);
+	const handlePauseRecording = () => {
+		if (readyState !== ReadyState.OPEN) return;
+		if (recordingState !== "recording") return;
+
+		sendJsonMessage({ type: "pause_transcription" });
+		setRecordingState("paused");
+	};
+
+	const handleResumeRecording = () => {
+		if (readyState !== ReadyState.OPEN) return;
+		if (recordingState !== "paused") return;
+
+		sendJsonMessage({ type: "resume_transcription" });
+		setRecordingState("recording");
+	};
+
+	const handleStopRecording = () => {
+		if (readyState !== ReadyState.OPEN) return;
+		if (recordingState === "idle") return;
+
+		sendJsonMessage({ type: "stop_transcription" });
+		setRecordingState("idle");
 	};
 
 	useEffect(() => {
-		
+
 		if(!lastJsonMessage) return;
 
-		if(lastJsonMessage.type === "summary_token"){
-			// get the payload, and add it to the text area for the summary
-			if(hasStarted.current === true){
-				hasStarted.current = false;
-				setIsLoading(false);
+		switch(lastJsonMessage.type) {
+			case "transcription_token": {
+				const { type, text } = lastJsonMessage.payload;
+
+				if (type === "partial") {
+					setTranscript(prev => prev + text + " ");
+				}
+
+				if (type === "final") {
+					setTranscript(prev => prev + "\n" + text + "\n");
+				}
+
+				break;
 			}
-			setSummary((s) => s + lastJsonMessage.payload)
 
-		} else if (lastJsonMessage.type === "summary_token_end") {
-			setIsGeneratingSummary(false);
+			case "summary_token":
+				// get the payload, and add it to the text area for the summary
+				if(hasStarted.current === true){
+					hasStarted.current = false;
+					setIsLoading(false);
+				}
+				setSummary((s) => s + lastJsonMessage.payload)
+				break
+			case "summary_token_end":
+				setIsGeneratingSummary(false);
+				break
 		}
-
 
   	}, [lastJsonMessage]);
-	
-	const handleSummarizeClick = () => {
-		if (!isRecording && readyState === ReadyState.OPEN) {
-			sendJsonMessage({
-				type:"transcription_chunk",
-				payload: transcript
-			})
 
-		}
+	const handleSummarizeClick = () => {
+		if (recordingState === "recording") return;
+    	if (readyState !== ReadyState.OPEN) return;
+
+	    sendJsonMessage({
+			type: "transcription_chunk",
+			payload: transcript,
+		});
 
 		hasStarted.current = true;
 		setIsLoading(true);
 		setIsGeneratingSummary(true);
-
-
-		// handle when readystate is not open
-		
 	};
 
+	const isRecording = recordingState === "recording"
 
 	return (
 		<div className="app-container">
@@ -101,15 +151,13 @@ function TranscriptionPage() {
 				</div>
 
 				<div className="main-options">
-					<Timer
-						isRecording={isRecording}
-						recordingStarted={recordingStarted}
-					/>
+					<Timer isRecording={isRecording} />
 					<RecordingOptions
-						isRecording={isRecording}
-						recordingStarted={recordingStarted}
-						handleIsRecording={handleIsRecording}
-						handleStartRecording={handleStartRecording}
+						recordingState={recordingState}
+						onStart={handleStartRecording}
+						onPause={handlePauseRecording}
+						onResume={handleResumeRecording}
+						onStop={handleStopRecording}
 					/>
 				</div>
 			</div>
@@ -117,8 +165,8 @@ function TranscriptionPage() {
 			<div className="second-level-header">
 				<Calendar />
 
-				
-					
+
+
 				<div className="main-options">
 						{/* <SelectModelOptions /> */}
 						<button

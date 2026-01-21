@@ -47,6 +47,7 @@ dependencies = [
     { name = "llama-cpp-python" },
     { name = "pywhispercpp" },
     { name = "sounddevice" },
+    { name = "uvicorn" },
 ]
 
 [package.metadata]
@@ -55,6 +56,7 @@ requires-dist = [
     { name = "llama-cpp-python", specifier = ">=0.3.16" },
     { name = "pywhispercpp", specifier = ">=1.4.1" },
     { name = "sounddevice", specifier = ">=0.5.3" },
+    { name = "uvicorn", specifier = ">=0.40.0" },
 ]
 
 [[package]]
