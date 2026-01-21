@@ -1,24 +1,30 @@
 import multiprocessing
+import logging
 
 from app.utils.utils import get_model_path, stream_response
 from .base_llm_interface import ModelInterface
 from llama_cpp import Llama
 
+logger = logging.getLogger(__name__)
 
 class LlamaCppInterface(ModelInterface):
 
     def __init__(self, model_name:str):
         self.num_threads = max(multiprocessing.cpu_count() // 2, 1)  # Use half the cores available
 
-        # Select correct model given the model name from user
-
-        self.llm = Llama(
-            model_path= str(get_model_path(model_name)),
-            verbose=False,
-            n_gpu_layers=-1,        # Full Metal acceleration
-            n_threads=self.num_threads,
-            n_ctx=4096              # Context window
-        )
+        try:
+            # Select correct model given the model name from user
+            self.llm = Llama(
+                model_path= str(get_model_path(model_name)),
+                verbose=False,
+                n_gpu_layers=-1,        # Full Metal acceleration
+                n_threads=self.num_threads,
+                n_ctx=4096              # Context window
+            )
+            logger.info(f"Successfully loaded model: {model_name}")
+        except Exception as e:
+            logger.error(f"Failed to load model {model_name}: {e}")
+            raise
 
     # Generate summary with no streaming
     def generate_summary(self, prompt: str, input: str):
@@ -38,29 +44,38 @@ class LlamaCppInterface(ModelInterface):
 
     # Helper method to summarize transcript
     def _summarize_transcript(self, prompt: str, input: str, stream: bool):
+        try:
+            if not prompt or not input:
+                raise ValueError("Prompt and input cannot be empty")
+            
+            messages = [
+                {
+                    "role": "system",
+                    "content": prompt   # prompt
+                },
+                {
+                    "role": "user",
+                    "content": input
+                }
+            ]
 
-        messages = [
-            {
-                "role": "system",
-                "content": prompt   # prompt
-            },
-            {
-                "role": "user",
-                "content": input
-            }
-        ]
-
-
-        # This returns a generator object
-        output = self.llm.create_chat_completion(messages=messages,
-                                                 temperature=0.0,                # NO creativity. Pure factual extraction.
-                                                 top_p=0.9,                      # Keep sampling stable.
-                                                 min_p=0.05,                     # Helps avoid weird token drops (q4 models)
-                                                 top_k=40,                       # Good balance for small models.
-                                                 repeat_penalty=1.05,            # Prevents looping without hurting accuracy.
-                                                 max_tokens=1024,                # Plenty for summary + SOAP.
+            # This returns a generator object
+            output = self.llm.create_chat_completion(messages=messages,
+                                                     temperature=0.0,                # NO creativity. Pure factual extraction.
+                                                     top_p=0.9,                      # Keep sampling stable.
+                                                     min_p=0.05,                     # Helps avoid weird token drops (q4 models)
+                                                     top_k=40,                       # Good balance for small models.
+                                                     repeat_penalty=1.05,            # Prevents looping without hurting accuracy.
+                                                     max_tokens=1024,                # Plenty for summary + SOAP.
                                                  stream=stream,
                                                  stop=["</s>", "<|eot_id|>"]    # Important for Llama-style formatting.
-        )
+            )
+            return output
+        except ValueError as e:
+            logger.error(f"Invalid input: {e}")
+            raise
+        except Exception as e:
+            logger.error(f"Model inference failed: {e}")
+            raise
 
         return output
