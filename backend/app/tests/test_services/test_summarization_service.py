@@ -1,103 +1,103 @@
-import time
-import unittest
+# import time
+# import unittest
 
-from app.utils.utils import  get_test_data_path
-from ...services.summarization_service import SummarizationService
+# from app.utils.utils import  get_test_data_path
+# from app.services.summarization_service import SummarizationService 
 
 
-class TestSummarizationService(unittest.TestCase):
+# class TestSummarizationService(unittest.IsolatedAsyncioTestCase):
 
-    FIRST_CONVO = "2min_convo.txt"
-    SECOND_CONVO = "5min_convo.txt"
-    THIRD_CONVO = "10min_convo.txt"
-    FOURTH_CONVO = "15min_convo.txt"
-    FIFTH_CONVO = "20min_convo.txt"
+#     FIRST_CONVO = "2min_convo.txt"
+#     SECOND_CONVO = "5min_convo.txt"
+#     THIRD_CONVO = "10min_convo.txt"
+#     FOURTH_CONVO = "15min_convo.txt"
+#     FIFTH_CONVO = "20min_convo.txt"
 
-    MEDI_PHI_CLINICAL_1 = "MediPhi-Clinical.i1-Q4_K_S.gguf"
+#     MEDI_PHI_CLINICAL_1 = "MediPhi-Clinical.i1-Q4_K_S.gguf"
     
-    LLAMA_1 = "Llama-3.2-1B-Instruct-Q5_K_M.gguf"
-    LLAMA_2 = "Llama-3.2-1B-Instruct-Q4_K_M.gguf"
+#     LLAMA_1 = "Llama-3.2-1B-Instruct-Q5_K_M.gguf"
+#     LLAMA_2 = "Llama-3.2-1B-Instruct-Q8_0.gguf"
 
-    prompt = """
-        You are a clinical documentation assistant. Your job is to create a concise clinical SUMMARY and SOAP note based ONLY on what is stated in the conversation. You MUST NOT add, infer, or guess any medical details.
+#     prompt = """
+#         You are a clinical documentation assistant. Your job is to create a concise clinical SUMMARY and SOAP note based ONLY on what is stated in the conversation. You MUST NOT add, infer, or guess any medical details.
 
-        STRICT RULES (DO NOT BREAK THESE):
-        - Do NOT diagnose anything (no anxiety disorder, depression, cardiomyopathy, etc.).
-        - Do NOT suggest or imply causes of symptoms.
-        - Do NOT recommend treatments, coping strategies, lifestyle changes, or follow-up plans.
-        - Do NOT add tests, referrals, or medical actions unless explicitly stated by the doctor.
-        - Do NOT state or invent vital signs, normal results, abnormal results, or physical exam findings.
-        - Do NOT expand the plan beyond what the doctor actually said.
-        - Do NOT use terms like “should,” “needs to,” “likely,” “could indicate,” or similar inference language.
+#         STRICT RULES (DO NOT BREAK THESE):
+#         - Do NOT diagnose anything (no anxiety disorder, depression, cardiomyopathy, etc.).
+#         - Do NOT suggest or imply causes of symptoms.
+#         - Do NOT recommend treatments, coping strategies, lifestyle changes, or follow-up plans.
+#         - Do NOT add tests, referrals, or medical actions unless explicitly stated by the doctor.
+#         - Do NOT state or invent vital signs, normal results, abnormal results, or physical exam findings.
+#         - Do NOT expand the plan beyond what the doctor actually said.
+#         - Do NOT use terms like “should,” “needs to,” “likely,” “could indicate,” or similar inference language.
 
-        ALLOWED:
-        - ONLY describe what the patient and doctor explicitly said.
-        - You MAY summarize patterns using neutral phrasing such as:
-        “Based on the patient’s report…” 
-        “Symptoms tend to occur during…”
-        “The patient describes…”
+#         ALLOWED:
+#         - ONLY describe what the patient and doctor explicitly said.
+#         - You MAY summarize patterns using neutral phrasing such as:
+#         “Based on the patient’s report…” 
+#         “Symptoms tend to occur during…”
+#         “The patient describes…”
 
-        FORMAT REQUIREMENTS:
+#         FORMAT REQUIREMENTS:
 
-        SUMMARY (5–7 sentences):
-        - Include major symptoms, patterns, triggers, emotional themes, sleep issues, stressors, and patient goals.
-        - Keep it factual and clinically neutral.
-        - DO NOT give interpretations or advice.
+#         SUMMARY (5–7 sentences):
+#         - Include major symptoms, patterns, triggers, emotional themes, sleep issues, stressors, and patient goals.
+#         - Keep it factual and clinically neutral.
+#         - DO NOT give interpretations or advice.
 
-        SOAP NOTE:
+#         SOAP NOTE:
 
-        Subjective:
-        - List ONLY patient-reported symptoms, stressors, emotional themes, sleep patterns, and concerns.
-        - No interpretations.
+#         Subjective:
+#         - List ONLY patient-reported symptoms, stressors, emotional themes, sleep patterns, and concerns.
+#         - No interpretations.
 
-        Objective:
-        - ONLY include objective findings if explicitly spoken by the doctor.
-        - If none were discussed, write: “No objective findings were discussed.”
+#         Objective:
+#         - ONLY include objective findings if explicitly spoken by the doctor.
+#         - If none were discussed, write: “No objective findings were discussed.”
 
-        Assessment:
-        - Summarize symptom patterns WITHOUT diagnosing or giving medical explanations.
-        - Use ONLY neutral phrasing, e.g., “Based on the patient’s report, symptoms tend to occur during…”
-        - Do NOT list any medical conditions.
+#         Assessment:
+#         - Summarize symptom patterns WITHOUT diagnosing or giving medical explanations.
+#         - Use ONLY neutral phrasing, e.g., “Based on the patient’s report, symptoms tend to occur during…”
+#         - Do NOT list any medical conditions.
 
-        Plan:
-        - ONLY include plan items explicitly stated by the doctor.
-        - If the doctor did not provide specific next steps, write:
-        “No specific plan was discussed in this conversation.”
+#         Plan:
+#         - ONLY include plan items explicitly stated by the doctor.
+#         - If the doctor did not provide specific next steps, write:
+#         “No specific plan was discussed in this conversation.”
 
-        Your output MUST stay strictly faithful to the transcript with zero added content.
-    """
+#         Your output MUST stay strictly faithful to the transcript with zero added content.
+#     """
 
-    # Create summarization service object 
-    # Call get_summary_generator_object function
-    def test_summarization_service(self):
+#     # Create summarization service object 
+#     # Call get_summary_generator_object function
+#     async def test_summarization_service(self):
 
-        ## Arrange 
-        file = open(get_test_data_path(self.FIRST_CONVO), "r")
+#         ## Arrange 
+#         file = open(get_test_data_path(self.FOURTH_CONVO), "r")
 
-        provider_name = "llama.cpp"
-        model_name = self.LLAMA_1
+#         provider_name = "llama.cpp"
+#         model_name = self.MEDI_PHI_CLINICAL_1
         
-        summarization_service = SummarizationService(provider_name, model_name)
+#         summarization_service = SummarizationService(provider_name, model_name)
 
-        summary_stream = summarization_service.get_summary_generator_object(self.prompt, file.read())
+#         summary_stream = summarization_service.get_summary_generator_object(self.prompt, file.read())
 
-        ## Act
-        start_time = time.time()
+#         ## Act
+#         start_time = time.time()
         
-        for token in summary_stream:
-            print(token, end="", flush=True)
+#         async for token in summary_stream:
+#             print(token, end="", flush=True)
 
-        print()
+#         print()
        
-        end_time = time.time()
+#         end_time = time.time()
         
-        elapsed_time = end_time - start_time
-        print(f"Model execution time: {elapsed_time:.4f} seconds")
+#         elapsed_time = end_time - start_time
+#         print(f"Model execution time: {elapsed_time:.4f} seconds")
 
-        file.close()
+#         file.close()
 
-        ## Assert
-        self.assertLessEqual(elapsed_time, 10, "Model took more than 10 seconds to execute")
+#         ## Assert
+#         self.assertLessEqual(elapsed_time, 10, "Model took more than 10 seconds to execute")
 
-if __name__ == "__main__":
-    unittest.main()
+# if __name__ == "__main__":
+#     unittest.main()

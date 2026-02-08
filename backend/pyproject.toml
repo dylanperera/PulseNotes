@@ -6,7 +6,10 @@ readme = "README.md"
 requires-python = ">=3.10"
 dependencies = [
     "fastapi[standard]>=0.128.0",
+    "httpx>=0.28.1",
     "llama-cpp-python>=0.3.16",
+    "psutil>=7.2.2",
+    "pytest>=9.0.2",
     "pywhispercpp>=1.4.1",
     "sounddevice>=0.5.3",
     "uvicorn>=0.40.0",

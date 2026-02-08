@@ -63,7 +63,7 @@ class SummarizationAgent(Agent):
 
         FORMAT REQUIREMENTS:
 
-        SUMMARY (5–7 sentences):
+        SUMMARY (4 sentences):
         - Include major symptoms, patterns, triggers, emotional themes, sleep issues, stressors, and patient goals.
         - Keep it factual and clinically neutral.
         - DO NOT give interpretations or advice.
@@ -105,8 +105,8 @@ class SummarizationAgent(Agent):
                 # llama.cpp streaming formats
                 token = (
                     chunk.get("choices", [{}])[0].get("delta", {}).get("content")
-                   # or chunk.get("choices", [{}])[0].get("text")
-                   # or chunk.get("token", {}).get("text")
+                   or chunk.get("choices", [{}])[0].get("text")
+                   or chunk.get("token", {}).get("text")
                 )
 
                 if not token:
@@ -120,6 +120,7 @@ class SummarizationAgent(Agent):
             logger.error(f"Error generating tokens: {e}")
             raise
         
+    
         
 
 
