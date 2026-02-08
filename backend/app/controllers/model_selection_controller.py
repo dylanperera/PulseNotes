@@ -9,6 +9,10 @@ class ModelSelectionController(Controller):
 
     def get_models_status(self, path):
 
+        # Check if string is empty
+        if not path:
+            return Exception("No path specified")
+
         result = self.model_selection_service.check_available_models(path)
 
         return result
