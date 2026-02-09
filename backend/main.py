@@ -1,8 +1,10 @@
 from app.controllers.transcription_controller import TranscriptionController
 from app.services.transcription_service import TranscriptionService
 from app.models.asr.adapters.pywhispercpp_adapter import PyWhisperCppAdapter
-from fastapi import FastAPI, WebSocket, WebSocketDisconnect
+from fastapi import FastAPI, HTTPException, WebSocket, WebSocketDisconnect, status
 from app.controllers.summarization_controller import SummarizationController
+from app.controllers.model_selection_controller import ModelSelectionController
+from app.dto.model_availability_dto import ModelAvailabilityDTO
 
 app = FastAPI()
 
@@ -62,3 +64,15 @@ async def web_socket_endpoint(websocket: WebSocket):
 
 
     await websocket.close()
+
+@app.get('/models/', response_model=None) 
+async def get_models(path: str = "/") -> list[ModelAvailabilityDTO]:
+
+    model_selection_controller = ModelSelectionController()
+    
+    try:
+        return model_selection_controller.get_models_status(path)
+    except OSError as e:
+        raise HTTPException(status_code=400, detail=f"Invalid path or system error: {e}")
+    except Exception as e:
+        raise HTTPException(status_code=500,detail="Failed to determine model availability")

@@ -66,9 +66,9 @@ class LlamaCppInterface(ModelInterface):
                                                      min_p=0.05,                     # Helps avoid weird token drops (q4 models)
                                                      top_k=40,                       # Good balance for small models.
                                                      repeat_penalty=1.05,            # Prevents looping without hurting accuracy.
-                                                     max_tokens=1024,                # Plenty for summary + SOAP.
-                                                 stream=stream,
-                                                 stop=["</s>", "<|eot_id|>"]    # Important for Llama-style formatting.
+                                                     max_tokens=4096,                # Plenty for summary + SOAP.
+                                                 stream=stream
+                                                # stop=["</s>", "<|eot_id|>"]    # Important for Llama-style formatting.
             )
             return output
         except ValueError as e:
