@@ -1,11 +1,11 @@
 from .base_controller import Controller
-from ..services.model_selection_service import ModelSelectionService
+from app.services.model_services import ModelServices
 
 class ModelSelectionController(Controller):
     
     def __init__(self):
         super().__init__()
-        self.model_selection_service = ModelSelectionService()
+        self.model_selection_service = ModelServices()
 
     def get_models_status(self, path):
 
