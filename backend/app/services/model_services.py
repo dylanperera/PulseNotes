@@ -36,27 +36,31 @@ class ModelServices():
         free_local_space = self._bytes_to_gigabytes(disk_stats.free)
 
         for name, size in self.models.items():
+
             model_dto = ModelAvailabilityDTO(name)
+            
+            result.append(model_dto)
             
             # Determine if model is even supported
             if (size * 2) > total_ram or free_local_space <= size:
                 model_dto.reason = "Model not supported on device, insufficient memory"
+                pass
             else:
                 model_dto.supported = True
 
-                # check if model exists in app data
-                if self._check_if_model_exists(path, name):
-                    model_dto.downloaded = True
-                else:
-                    model_dto.reason = "Model must be downloaded - Please connect to internet to try downloading"
+            # check if model exists in app data
+            if not self._check_if_model_exists(path, name):
+                model_dto.reason = "Model must be downloaded - Please connect to internet to try downloading"
+                pass
+            else:
+                model_dto.downloaded = True
 
-                # Check if the model can be used right now based on current RAM
-                if size < free_ram: # We can play around with this depdending on our context size
-                    model_dto.usable_now = True
-                else:
-                    model_dto.reason = "Not enough RAM to currently support model"
-
-            result.append(model_dto)
+            # Check if the model can be used right now based on current RAM
+            if size >= free_ram: # We can play around with this depdending on our context size
+                model_dto.reason = "Not enough RAM to currently support model"
+                pass
+            else:
+                model_dto.usable_now = True
 
         return result
     
