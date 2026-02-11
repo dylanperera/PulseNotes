@@ -4,7 +4,7 @@ from app.models.asr.adapters.pywhispercpp_adapter import PyWhisperCppAdapter
 from fastapi import FastAPI, HTTPException, WebSocket, WebSocketDisconnect, status
 from app.controllers.summarization_controller import SummarizationController
 from app.controllers.model_selection_controller import ModelSelectionController
-from app.dto.model_availability_dto import ModelAvailabilityDTO
+from app.dtos.model_availability_dto import ModelAvailabilityDTO
 
 app = FastAPI()
 

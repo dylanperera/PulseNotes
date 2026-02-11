@@ -1,5 +1,5 @@
 from collections import defaultdict
-from app.dto.model_availability_dto import ModelAvailabilityDTO
+from app.dtos.model_availability_dto import ModelAvailabilityDTO
 from app.enums.ErrorMessageEnum import ErrorMessage
 import psutil
 import logging
@@ -44,23 +44,23 @@ class ModelServices():
             # Determine if model is even supported
             if (size * 2) > total_ram or free_local_space <= size:
                 model_dto.reason = "Model not supported on device, insufficient memory"
-                pass
+                continue
             else:
                 model_dto.supported = True
+    
+            # Check if the model can be used right now based on current RAM
+            if size >= free_ram: # We can play around with this depdending on our context size
+                model_dto.reason = "Not enough RAM to currently support model"
+                continue
+            else:
+                model_dto.usable_now = True
 
             # check if model exists in app data
             if not self._check_if_model_exists(path, name):
                 model_dto.reason = "Model must be downloaded - Please connect to internet to try downloading"
-                pass
+                continue
             else:
                 model_dto.downloaded = True
-
-            # Check if the model can be used right now based on current RAM
-            if size >= free_ram: # We can play around with this depdending on our context size
-                model_dto.reason = "Not enough RAM to currently support model"
-                pass
-            else:
-                model_dto.usable_now = True
 
         return result
     
@@ -75,12 +75,15 @@ class ModelServices():
 
         # If we get here, that means model has not been downloaded, so we must download it
         try:
-            hf_hub_download(repo_id = os.environ["HF_MODELS_REPO_ID"], 
+            hf_repo_url = os.getenv("HF_MODELS_REPO_ID", "DylanPerera1/pulsenotes-med-models")
+            hf_hub_download(repo_id = hf_repo_url, 
                             filename = model_name, 
                             local_dir = path,
                            )
         except:
             return ErrorMessage.UNABLE_TO_DOWNLOAD_MODEL
+        
+        return 
 
 
     def _bytes_to_gigabytes(self, num_bytes):
@@ -98,7 +101,8 @@ class ModelServices():
 
     def _check_internet_connection(self):
         try:
-            requests.get(os.environ['INTERNET_CONNECTION_TEST_URL'], timeout=5)
+            url = os.getenv("INTERNET_CONNECTION_TEST_URL", "https://www.google.com")
+            requests.get(url, timeout=5)
             return True
         except requests.ConnectionError:
             return False
