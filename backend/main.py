@@ -5,7 +5,8 @@ from fastapi import FastAPI, HTTPException, WebSocket, WebSocketDisconnect, stat
 from app.controllers.summarization_controller import SummarizationController
 from app.controllers.model_controller import ModelController
 from app.dtos.model_availability_dto import ModelAvailabilityDTO
-from app.dtos.download_response_dto import DownloadResponseDTO
+from app.dtos.success_dto import SuccessDTO
+from app.dtos.error_dto import ErrorDTO
 from app.enums.ErrorMessageEnum import ErrorMessage
 
 app = FastAPI()
@@ -67,31 +68,29 @@ async def web_socket_endpoint(websocket: WebSocket):
 
     await websocket.close()
 
-@app.get('/models/', response_model=None) 
-async def get_models(path: str = "/") -> list[ModelAvailabilityDTO]:
+@app.get('/models/', response_model=SuccessDTO) 
+async def get_models(path: str = "/"):
 
     model_controller = ModelController()
+
+    result: SuccessDTO | ErrorDTO = model_controller.get_models_status(path)
+
+    if(isinstance(result, ErrorDTO)):
+        raise HTTPException(status_code=result.status_code, detail=result.model_dump())
     
-    try:
-        return model_controller.get_models_status(path)
-    except OSError as e:
-        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail=f"Invalid path or system error: {e}")
-    except Exception as e:
-        raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,detail="Failed to determine model availability")
+    return result
 
 
-@app.get("/models/download/", response_model=DownloadResponseDTO)
+@app.get("/models/download/", response_model=SuccessDTO)
 async def download_model(model_name: str = "", path: str = "/"):
 
     model_controller = ModelController()
-    
-    result: DownloadResponseDTO = model_controller.download_new_model(path, model_name)
+    result: SuccessDTO | ErrorDTO = model_controller.download_new_model(path, model_name)
 
-    if result.error is None:
-        return result
+    if(isinstance(result, ErrorDTO)):
+        raise HTTPException(status_code=result.status_code, detail=result.model_dump())
     
-    if result.error == ErrorMessage.UNABLE_TO_DOWNLOAD_MODEL:
-        raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail=result.model_dump())
-    else:
-        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail=result.model_dump())
+    return result
+
+
 

@@ -18,12 +18,17 @@ class ModelServices():
 
         # Model sizes
         self.models = {
-                        "llama3.2": 0.893,
+                        "Llama-3.2-1B-Instruct-Q5_K_S.gguf": 0.893,
                         "medi-phi": 2.1,
                         "large-model": 4.9
                       }
 
     def check_available_models(self, path):
+
+        # Check if string is empty
+        if not path:
+            return ErrorMessage.INVALID_PATH
+
         # Get the current available local disk space and the available RAM
         result: list[ModelAvailabilityDTO] = []
         ram_stats = psutil.virtual_memory()
@@ -65,6 +70,13 @@ class ModelServices():
         return result
     
     def download_model(self, path, model_name):
+
+        if not path:
+            return ErrorMessage.INVALID_PATH
+
+        if not model_name:
+            return ErrorMessage.MODEL_NAME_MISSING
+
         # Check if the model is downloaded in the app data directory
         if(self._check_if_model_exists(path, model_name)):
             return ErrorMessage.MODEL_EXISTS
