@@ -96,6 +96,18 @@ class ModelServices():
             return ErrorMessage.UNABLE_TO_DOWNLOAD_MODEL
         
         return None
+    
+    def delete_model(self, path, model_name):
+
+        # Check if the model exists at the path
+        try:
+            if self._check_if_model_exists(path, model_name):
+                os.remove(Path(path) / model_name)
+                return None
+            else:
+                return ErrorMessage.MODEL_DOES_NOT_EXIST
+        except:
+            return ErrorMessage.COULD_NOT_DELETE_MODEL
 
 
     def _bytes_to_gigabytes(self, num_bytes):

@@ -2,6 +2,7 @@ from .base_controller import Controller
 from app.services.model_services import ModelServices
 from app.enums.ErrorMessageEnum import MESSAGE_MAP, ERROR_CODE_MAP
 from app.dtos.download_response_dto import DownloadResponseDTO
+from app.dtos.delete_response_dto import DeleteResponseDTO
 from app.dtos.success_dto import SuccessDTO
 from app.dtos.error_dto import ErrorDTO
 
@@ -31,8 +32,14 @@ class ModelController(Controller):
         else:
             return ErrorDTO(message=MESSAGE_MAP[result], status_code=ERROR_CODE_MAP[result])
 
-    # def remove_model_from_disk(self, path, model_):
-    #     pass
+    def remove_model_from_disk(self, path, model):
+        
+        result = self.model_services.delete_model(path, model)
+
+        if result is None:
+            return SuccessDTO(result = DeleteResponseDTO(message="Successfully deleted model"), status_code=200)
+        else:
+            return ErrorDTO(message=MESSAGE_MAP[result], status_code=ERROR_CODE_MAP[result])
 
     
 
