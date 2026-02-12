@@ -27,5 +27,16 @@ class TestSummarizationSelectionMacOS(unittest.TestCase):
         result = model_services.download_model(path, model_name)
         print(result)
 
+
+    def test_model_deletion(self):
+        ### Arrange
+        model_services = ModelServices()
+        path = '/Users/dylanperera/Desktop/test_models'
+        model_name = "Llama-3.2-1B-Instruct-Q5_K_S.gguf"
+        
+        ### Act
+        result = model_services.delete_model(path, model_name)
+        assert(result == None)
+
 if __name__ == "__main__":
     unittest.main()

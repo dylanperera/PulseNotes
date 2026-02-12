@@ -11,3 +11,7 @@ def test_get_models():
 def test_download_models():
     response = client.get("/models/download/", params={"model_name":"Llama-3.2-1B-Instruct-Q5_K_S.gguf", "path":"/Users/dylanperera/Desktop/test_models"})
     print(response.json())
+
+def test_delete_model():
+    response = client.get("/models/download/", params={"model_name":"Llama-3.2-1B-Instruct-Q5_K_S.gguf", "path":"/Users/dylanperera/Desktop/test_models"})
+    print(response.json())

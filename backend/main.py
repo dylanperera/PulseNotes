@@ -92,5 +92,15 @@ async def download_model(model_name: str = "", path: str = "/"):
     
     return result
 
+@app.delete("/delete/", response_model=SuccessDTO)
+async def remove_model_from_disk(model_name: str = "", path: str = "/"):
+
+    model_controller = ModelController()
+    result: SuccessDTO | ErrorDTO = model_controller.remove_model_from_disk(path, model_name)
+
+    if(isinstance(result, ErrorDTO)):
+        raise HTTPException(status_code=result.status_code, detail=result.model_dump())
+    
+    return result
 
 
