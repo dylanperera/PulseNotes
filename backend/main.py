@@ -3,8 +3,10 @@ from app.services.transcription_service import TranscriptionService
 from app.models.asr.adapters.pywhispercpp_adapter import PyWhisperCppAdapter
 from fastapi import FastAPI, HTTPException, WebSocket, WebSocketDisconnect, status
 from app.controllers.summarization_controller import SummarizationController
-from app.controllers.model_selection_controller import ModelSelectionController
+from app.controllers.model_controller import ModelController
 from app.dtos.model_availability_dto import ModelAvailabilityDTO
+from app.dtos.download_response_dto import DownloadResponseDTO
+from app.enums.ErrorMessageEnum import ErrorMessage
 
 app = FastAPI()
 
@@ -68,11 +70,28 @@ async def web_socket_endpoint(websocket: WebSocket):
 @app.get('/models/', response_model=None) 
 async def get_models(path: str = "/") -> list[ModelAvailabilityDTO]:
 
-    model_selection_controller = ModelSelectionController()
+    model_controller = ModelController()
     
     try:
-        return model_selection_controller.get_models_status(path)
+        return model_controller.get_models_status(path)
     except OSError as e:
-        raise HTTPException(status_code=400, detail=f"Invalid path or system error: {e}")
+        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail=f"Invalid path or system error: {e}")
     except Exception as e:
-        raise HTTPException(status_code=500,detail="Failed to determine model availability")
+        raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,detail="Failed to determine model availability")
+
+
+@app.get("/models/download/", response_model=DownloadResponseDTO)
+async def download_model(model_name: str = "", path: str = "/"):
+
+    model_controller = ModelController()
+    
+    result: DownloadResponseDTO = model_controller.download_new_model(path, model_name)
+
+    if result.error is None:
+        return result
+    
+    if result.error == ErrorMessage.UNABLE_TO_DOWNLOAD_MODEL:
+        raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail=result.model_dump())
+    else:
+        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail=result.model_dump())
+

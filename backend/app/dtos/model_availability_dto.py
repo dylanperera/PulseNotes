@@ -1,4 +1,5 @@
-class ModelAvailabilityDTO():
+from pydantic import BaseModel
+class ModelAvailabilityDTO(BaseModel):
 
     # Name of the model
     model_name: str
@@ -14,6 +15,3 @@ class ModelAvailabilityDTO():
 
     # If the model can't be used, why 
     reason: str = ""
-
-    def __init__(self, model_name):
-        self.model_name = model_name

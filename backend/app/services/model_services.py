@@ -18,7 +18,7 @@ class ModelServices():
 
         # Model sizes
         self.models = {
-                        "llama3.2": 0.8,
+                        "llama3.2": 0.893,
                         "medi-phi": 2.1,
                         "large-model": 4.9
                       }
@@ -37,7 +37,7 @@ class ModelServices():
 
         for name, size in self.models.items():
 
-            model_dto = ModelAvailabilityDTO(name)
+            model_dto = ModelAvailabilityDTO(model_name=name)
             
             result.append(model_dto)
             
@@ -83,7 +83,7 @@ class ModelServices():
         except:
             return ErrorMessage.UNABLE_TO_DOWNLOAD_MODEL
         
-        return 
+        return None
 
 
     def _bytes_to_gigabytes(self, num_bytes):
