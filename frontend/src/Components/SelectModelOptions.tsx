@@ -5,7 +5,16 @@ import ListItemText from "@mui/material/ListItemText";
 import Menu, { type MenuProps } from "@mui/material/Menu";
 import MenuItem from "@mui/material/MenuItem";
 import { alpha, styled } from "@mui/material/styles";
-import * as React from "react";
+import axios from "axios";
+import { useState, useEffect, MouseEvent } from "react";
+import { app } from "electron"
+import { type ErrorDTO, SuccessDTO } from "../dtos/BaseResponse"
+import { type ModelAvailabilityDTO } from "../dtos/ModelAvailabilityDTO"
+
+// TODO: CHANGE THESE
+const END_POINT_URL = "http://127.0.0.1:8000";
+const PATH = '/Users/dylanperera/Desktop/test_models';
+
 
 const StyledMenu = styled((props: MenuProps) => (
 	<Menu
@@ -52,10 +61,12 @@ const StyledMenu = styled((props: MenuProps) => (
 		}),
 	},
 }));
+
+
 export default function SelectModelOptions() {
-	const [anchorEl, setAnchorEl] = React.useState<null | HTMLElement>(null);
+	const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
 	const open = Boolean(anchorEl);
-	const handleClick = (event: React.MouseEvent<HTMLElement>) => {
+	const handleClick = (event: MouseEvent<HTMLElement>) => {
 		setAnchorEl(event.currentTarget);
 	};
 	const handleStart = () => {
@@ -64,6 +75,29 @@ export default function SelectModelOptions() {
 	const handleClose = () => {
 		setAnchorEl(null);
 	};
+
+	const [userDataPath, setUserDataPath] = useState("");
+
+	const [availableModels, setAvailableModels] = useState<ModelAvailabilityDTO[]>([]);
+
+	useEffect(() => {
+		const fetchModels = async () => {
+			try {
+				const url = `${END_POINT_URL}/models`
+				const response = await axios.get<SuccessDTO<ModelAvailabilityDTO[]>>(url, { params: {"path":PATH}} )
+				
+			} catch (error: any) {
+				const err: ErrorDTO | undefined = error;
+
+				console.log(err);
+			}
+			
+		};
+
+		fetchModels();
+	}, 
+	[]);
+	
 
 	return (
 		<div className="model-select">
@@ -84,7 +118,7 @@ export default function SelectModelOptions() {
 					},
 				}}
 			>
-				<b style={{ marginLeft: "8px" }}>Select Model</b>
+				<b style={{ marginLeft: "8px" }}>Model</b>
 			</Button>
 			<StyledMenu
 				id="demo-customized-menu"
