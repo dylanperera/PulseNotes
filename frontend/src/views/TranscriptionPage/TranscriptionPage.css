@@ -64,43 +64,26 @@ img {
 	min-height: 0;
 }
 
-
 .summarize-button {
 	position: relative;
 	display: inline-flex;
 	align-items: center;
 	gap: 8px;
 
-	color: #fff;
+	color: #2EB7B6;
 	border: none;
-	border-radius: 25px;
-	padding: 10px 20px;
-	font-size: 16px;
+	border-radius: 8px;
+	padding: 8px 12px;
+	font-size: 14px;
 	font-weight: 500;
 	z-index: 0;
 	overflow: hidden;
 }
 
-.summarize-button-on{
+.summarize-button-on {
 	background: rgba(3, 3, 5, 0.95);
 	cursor: pointer;
 	transition: transform 0.2s ease;
-}
-
-.summarize-button-on::before {
-	content: "";
-	position: absolute;
-	inset: 0;
-	border-radius: inherit;
-	padding: 3px;
-	transition: background 0.4s ease;
-	background: linear-gradient(135deg, #7b61ff, #4adede, #8ef6ff);
-	-webkit-mask:
-		linear-gradient(#fff 0 0) content-box,
-		linear-gradient(#fff 0 0);
-	-webkit-mask-composite: xor;
-	mask-composite: exclude;
-	z-index: -1;
 }
 
 .summarize-button-on:hover {
@@ -116,23 +99,6 @@ img {
 		filter 0.05s ease;
 }
 
-
-.summarize-button-on::before {
-	background-size: 300% 300%;
-	animation: gradientShift 4s ease infinite;
-}
-
-@keyframes gradientShift {
-	0% {
-		background-position: 0% 50%;
-	}
-	50% {
-		background-position: 100% 50%;
-	}
-	100% {
-		background-position: 0% 50%;
-	}
-}
 
 /* Icon styling */
 .summarize-button .icon {

@@ -79,10 +79,10 @@
 }
 
 .summary-loading {
-    background-image: url("../images/fade-stagger-circles.svg");
-    background-size: 75px 75px;
-    background-position: center;
-    background-repeat: no-repeat;
+	background-image: url("../images/fade-stagger-circles.svg");
+	background-size: 75px 75px;
+	background-position: center;
+	background-repeat: no-repeat;
 }
 
 .rich-text-container {
@@ -133,7 +133,7 @@
 /* TipTap editor surface */
 .rich-text-editor {
 	flex: 1;
-	min-height: 0; 
+	min-height: 0;
 	border: 2px solid #ccc;
 	border-top: none;
 	border-radius: 0 0 18px 18px;
@@ -192,5 +192,5 @@
 }
 
 .rich-text-editor .ProseMirror {
-  height: 100%;
+	height: 100%;
 }

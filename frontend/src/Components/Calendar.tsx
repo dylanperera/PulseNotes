@@ -18,7 +18,6 @@ export default function DateTimePickerValue() {
 					slotProps={{
 						textField: {
 							sx: {
-
 								// HOVER BORDER
 								"&:hover .MuiPickersOutlinedInput-notchedOutline": {
 									borderColor: "#244A82",

@@ -1,17 +1,17 @@
-import { useState, useRef, useEffect } from "react";
+import { useEffect, useRef, useState } from "react";
 import "./TranscriptionPage.css";
 import AutoAwesomeIcon from "@mui/icons-material/AutoAwesome";
+import useWebSocket, { ReadyState } from "react-use-websocket";
 import logo from "../../assets/images/PulseNotesTransparent.png";
 import Calendar from "../../Components/Calendar";
 import ExportButton from "../../Components/ExportButton";
 import NewSessionButton from "../../Components/NewSessionButton";
 import PatientName from "../../Components/PatientName";
 import RecordingOptions from "../../Components/RecordingOptions";
+import RichTextField from "../../Components/RichTextField";
 import SelectModelOptions from "../../Components/SelectModelOptions";
 import TextField from "../../Components/TextField";
 import Timer from "../../Components/Timer";
-import useWebSocket, { ReadyState } from "react-use-websocket";
-import RichTextField from "../../Components/RichTextField";
 
 type WSMessage =
 	| {
@@ -33,10 +33,9 @@ type WSMessage =
 type RecordingState = "idle" | "recording" | "paused";
 
 function TranscriptionPage() {
-
 	// TODO: Look into changing this to be dynamic just in case a port is blocked
-  	//const WS_URL = "http://127.0.0.1:8000/ws"
-	const WS_URL = "ws://127.0.0.1:8000/ws"
+	//const WS_URL = "http://127.0.0.1:8000/ws"
+	const WS_URL = "ws://127.0.0.1:8000/ws";
 
 	const [recordingState, setRecordingState] = useState<RecordingState>("idle");
 
@@ -44,20 +43,17 @@ function TranscriptionPage() {
 	const [summary, setSummary] = useState("");
 
 	const [isLoading, setIsLoading] = useState(false); // Loading state for summary
-	const hasStarted = useRef(false) // ref to check if recording has started summarizing (more of a safe-guard to remove the loading spinner)
+	const hasStarted = useRef(false); // ref to check if recording has started summarizing (more of a safe-guard to remove the loading spinner)
 
 	const [isGeneratingSummary, setIsGeneratingSummary] = useState(false);
 
-
 	// Create websocket - There will be one web socket for both transcription and summarization
 	// This is to save on memory and latency (multiplexing)
-	const { sendJsonMessage, lastJsonMessage, readyState } = useWebSocket<WSMessage>(
-		WS_URL,
-		{
+	const { sendJsonMessage, lastJsonMessage, readyState } =
+		useWebSocket<WSMessage>(WS_URL, {
 			share: false,
 			shouldReconnect: () => true,
-		},
-  	)
+		});
 
 	const handleStartRecording = () => {
 		if (readyState !== ReadyState.OPEN) return;
@@ -92,19 +88,18 @@ function TranscriptionPage() {
 	};
 
 	useEffect(() => {
+		if (!lastJsonMessage) return;
 
-		if(!lastJsonMessage) return;
-
-		switch(lastJsonMessage.type) {
+		switch (lastJsonMessage.type) {
 			case "transcription_token": {
 				const { type, text } = lastJsonMessage.payload;
 
 				if (type === "partial") {
-					setTranscript(prev => prev + text + " ");
+					setTranscript((prev) => prev + text + " ");
 				}
 
 				if (type === "final") {
-					setTranscript(prev => prev + "\n" + text + "\n");
+					setTranscript((prev) => prev + "\n" + text + "\n");
 				}
 
 				break;
@@ -112,24 +107,23 @@ function TranscriptionPage() {
 
 			case "summary_token":
 				// get the payload, and add it to the text area for the summary
-				if(hasStarted.current === true){
+				if (hasStarted.current === true) {
 					hasStarted.current = false;
 					setIsLoading(false);
 				}
-				setSummary((s) => s + lastJsonMessage.payload)
-				break
+				setSummary((s) => s + lastJsonMessage.payload);
+				break;
 			case "summary_token_end":
 				setIsGeneratingSummary(false);
-				break
+				break;
 		}
-
-  	}, [lastJsonMessage]);
+	}, [lastJsonMessage]);
 
 	const handleSummarizeClick = () => {
 		if (recordingState === "recording") return;
-    	if (readyState !== ReadyState.OPEN) return;
+		if (readyState !== ReadyState.OPEN) return;
 
-	    sendJsonMessage({
+		sendJsonMessage({
 			type: "transcription_chunk",
 			payload: transcript,
 		});
@@ -139,7 +133,7 @@ function TranscriptionPage() {
 		setIsGeneratingSummary(true);
 	};
 
-	const isRecording = recordingState === "recording"
+	const isRecording = recordingState === "recording";
 
 	return (
 		<div className="app-container">
@@ -165,23 +159,21 @@ function TranscriptionPage() {
 			<div className="second-level-header">
 				<Calendar />
 
-
-
 				<div className="main-options">
-						<SelectModelOptions />
+					<SelectModelOptions />
 
-						<button
-							className={`summarize-button ${ (isRecording === true || isGeneratingSummary === true) ? 'summarize-button-off' : 'summarize-button-on' }`}
-							onClick={handleSummarizeClick}
-							disabled={(isRecording === true || isGeneratingSummary === true)}
-							type="button"
-						>
-							<b>SUMMARIZE</b>
-							<AutoAwesomeIcon />
-						</button>
-					<ExportButton/>
+					<button
+						className={`summarize-button ${isRecording === true || isGeneratingSummary === true ? "summarize-button-off" : "summarize-button-on"}`}
+						onClick={handleSummarizeClick}
+						disabled={isRecording === true || isGeneratingSummary === true}
+						type="button"
+					>
+						<b>SUMMARIZE</b>
+						<AutoAwesomeIcon />
+					</button>
+
+					<ExportButton />
 				</div>
-
 			</div>
 
 			<div className="content">
@@ -194,12 +186,12 @@ function TranscriptionPage() {
 					placeHolder="Start recording or type notes here..."
 				/>
 				<RichTextField
-  					id="summary"
-  					text={summary}
-  					setContent={setSummary}
-  					isRecording={isRecording}
-  					isLoading={isLoading}
-  					placeHolder="Summary..."
+					id="summary"
+					text={summary}
+					setContent={setSummary}
+					isRecording={isRecording}
+					isLoading={isLoading}
+					placeHolder="Summary..."
 				/>
 			</div>
 

@@ -4,17 +4,35 @@ import Divider from "@mui/material/Divider";
 import ListItemText from "@mui/material/ListItemText";
 import Menu, { type MenuProps } from "@mui/material/Menu";
 import MenuItem from "@mui/material/MenuItem";
+import ListSubheader from '@mui/material/ListSubheader';
 import { alpha, styled } from "@mui/material/styles";
 import axios from "axios";
-import { useState, useEffect, MouseEvent } from "react";
+import { useState, useEffect, MouseEvent, useMemo } from "react";
 import { app } from "electron"
 import { type ErrorDTO, SuccessDTO } from "../dtos/BaseResponse"
 import { type ModelAvailabilityDTO } from "../dtos/ModelAvailabilityDTO"
+import { type DeleteResponseDTO } from "../dtos/DeleteResponseDTO"
+import { type DownloadResponseDTO } from "../dtos/DownloadResponseDTO"
+import Tooltip from '@mui/material/Tooltip';
+import DeleteOutlinedIcon from '@mui/icons-material/DeleteOutlined';
+import IconButton from '@mui/material/IconButton';
+import FileDownloadOutlinedIcon from '@mui/icons-material/FileDownloadOutlined';
 
 // TODO: CHANGE THESE
 const END_POINT_URL = "http://127.0.0.1:8000";
 const PATH = '/Users/dylanperera/Desktop/test_models';
 
+
+const StyledListHeader = styled(ListSubheader)(({ theme }) => ({
+  backgroundImage: 'var(--Paper-overlay)',
+  // Reduce vertical padding for less whitespace around categories
+  lineHeight: theme.spacing(4),
+  paddingTop: 0,
+  paddingBottom: 0,
+  marginTop: 0,
+  marginBottom: 0,
+  fontSize: 16
+}))
 
 const StyledMenu = styled((props: MenuProps) => (
 	<Menu
@@ -66,19 +84,44 @@ const StyledMenu = styled((props: MenuProps) => (
 export default function SelectModelOptions() {
 	const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
 	const open = Boolean(anchorEl);
+
 	const handleClick = (event: MouseEvent<HTMLElement>) => {
 		setAnchorEl(event.currentTarget);
 	};
-	const handleStart = () => {
+
+	const handleStart = (event: MouseEvent<HTMLElement>) => {
+		
+		const modelName: string = event.currentTarget.textContent === null ? '' : event.currentTarget.textContent;
+
+		setCurrentlyUsedModel(modelName);
 		setAnchorEl(null);
 	};
+
 	const handleClose = () => {
 		setAnchorEl(null);
 	};
 
+	const [currentlyUsedModel, setCurrentlyUsedModel] = useState<string>("");
+
 	const [userDataPath, setUserDataPath] = useState("");
 
-	const [availableModels, setAvailableModels] = useState<ModelAvailabilityDTO[]>([]);
+	const [models, setModels] = useState<ModelAvailabilityDTO[]>([]);
+
+	// Need 3 computed values based off of the state above:
+	// one for the available 
+	const downloadedModels: ModelAvailabilityDTO[] = useMemo(() => {
+		return models.filter(model => model.downloaded === true)
+	}, [models]);
+
+	// one for the currently unavailable
+	const modelsToDownload: ModelAvailabilityDTO[] = useMemo(() => {
+		return models.filter(model => model.supported === true && model.downloaded === false)
+	}, [models]);
+
+	// one for the unsupported
+	const unsupportedModels: ModelAvailabilityDTO[] = useMemo(() => {
+		return models.filter(model => model.supported === false)
+	}, [models]);
 
 	useEffect(() => {
 		const fetchModels = async () => {
@@ -86,6 +129,10 @@ export default function SelectModelOptions() {
 				const url = `${END_POINT_URL}/models`
 				const response = await axios.get<SuccessDTO<ModelAvailabilityDTO[]>>(url, { params: {"path":PATH}} )
 				
+				setModels(response.data.result);
+
+				console.log(response);
+
 			} catch (error: any) {
 				const err: ErrorDTO | undefined = error;
 
@@ -97,7 +144,35 @@ export default function SelectModelOptions() {
 		fetchModels();
 	}, 
 	[]);
+
+	// Endpoint call to delete the model from the device
+	const deleteModel = async (modelName: string, path: string) => {
+		
+		try {
+			// Try to delete the model 
+			const url = `${END_POINT_URL}/delete?model_name=${modelName}&path=${path}`;
+
+			await axios.delete<SuccessDTO<DeleteResponseDTO>>(url);
+
+			// reload component?
+		} catch (error: any) {
+			const err: ErrorDTO | undefined = error;
+
+			console.log(err);
+		}
+	}
 	
+	const downloadModel = async (modelName: string, path: string) => {
+		try {
+			const url = `${END_POINT_URL}/models/download?model_name=${modelName}&path=${path}`;
+
+			await axios.get<SuccessDTO<DownloadResponseDTO>>(url);
+		} catch (error: any) {
+			const err: ErrorDTO | undefined = error;
+
+			console.log(err);
+		}
+	}
 
 	return (
 		<div className="model-select">
@@ -118,32 +193,141 @@ export default function SelectModelOptions() {
 					},
 				}}
 			>
-				<b style={{ marginLeft: "8px" }}>Model</b>
+				<b style={{ marginLeft: "8px" }}>Model{ currentlyUsedModel !== "" ? `: ${currentlyUsedModel}` : ''}</b>
 			</Button>
 			<StyledMenu
-				id="demo-customized-menu"
-				slotProps={{
-					list: {
-						"aria-labelledby": "demo-customized-button",
-					},
-				}}
-				anchorEl={anchorEl}
-				open={open}
-				onClose={handleClose}
+			id="demo-customized-menu"
+			anchorEl={anchorEl}
+			open={open}
+			onClose={handleClose}
+			slotProps={{
+				paper: {
+				sx: {
+					maxHeight: 200,   // adjust as needed
+					overflowY: "scroll",
+				},
+				},
+				list: {
+				"aria-labelledby": "demo-customized-button",
+				},
+			}}
 			>
-				<MenuItem onClick={handleStart} disableRipple>
-					<ListItemText
-						primary="Llama 3.2"
-						secondary="(Decides how long to think)"
-					/>
-				</MenuItem>
-				<Divider sx={{ my: 0.5 }} />
-				<MenuItem onClick={handleClose} disableRipple>
-					<ListItemText
-						primary="MediPhi-Clinical"
-						secondary="(Thinks longer for better answers)"
-					/>{" "}
-				</MenuItem>
+				<StyledListHeader disableSticky>Ready to Use</StyledListHeader>
+				{ 
+					downloadedModels.map(model => {
+						return (<MenuItem disableRipple key={model.model_name}>
+									<ListItemText
+										onClick={handleStart}
+										primary= { model.model_name }
+										// secondary="(Decides how long to think)"
+									/>
+
+									<Tooltip title="Delete Model from Device">
+										<IconButton sx={{ 
+											'&:hover': {
+												backgroundColor: 'rgba(245,39,39,0.32)'
+											},
+											'borderRadius': '100%'
+										}} 
+										onClick={() => deleteModel(model.model_name, PATH)}
+										>
+											<DeleteOutlinedIcon sx={{
+												marginRight: '0 !important'
+											}} />
+										</IconButton>
+									</Tooltip>
+								</MenuItem>
+								);
+					})				
+				}
+				<Divider />
+				<StyledListHeader disableSticky>Available to Download</StyledListHeader>
+				{ 
+					modelsToDownload.map(model => {
+						return (
+
+							<Tooltip title={model.reason} arrow
+							slotProps={{
+								popper: {
+								modifiers: [
+									{
+									name: 'offset',
+									options: {
+										offset: [0, -20],
+									},
+									},
+								],
+								},
+								tooltip: {
+									sx: {
+										fontSize: '0.9rem'
+									}
+								}
+							}}
+							placement="right"
+							key={model.model_name}
+							>
+								<div>
+									<MenuItem disableRipple>
+										<ListItemText
+											primary= { model.model_name }
+											// secondary="(Decides how long to think)"
+										/>
+										<Tooltip title="Download Model">
+											<IconButton sx={{ 
+												'borderRadius': '100%'
+											}} 
+											onClick={() => downloadModel(model.model_name, PATH)}
+											>
+												<FileDownloadOutlinedIcon sx={{
+													marginRight: '0 !important'
+												}} />
+											</IconButton>
+										</Tooltip>
+									</MenuItem>
+								</div>
+							</Tooltip>
+						);
+					})				
+				}
+				<Divider />
+				<StyledListHeader>Not Supported</StyledListHeader>
+				{ 
+					unsupportedModels.map(model => {
+						return (
+							<Tooltip title={model.reason} arrow
+							slotProps={{
+								popper: {
+								modifiers: [
+									{
+									name: 'offset',
+									options: {
+										offset: [0, -20],
+									},
+									},
+								],
+								},
+								tooltip: {
+									sx: {
+										fontSize: '0.9rem'
+									}
+								}
+							}}
+							placement="right"
+							
+							>
+								<div>
+									<MenuItem onClick={handleStart} disabled={true}>
+									<ListItemText
+										primary= { model.model_name }
+										// secondary="(Decides how long to think)"
+									/>
+								</MenuItem>
+								</div>
+							</Tooltip>
+							);
+					})				
+				}
 			</StyledMenu>
 		</div>
 	);

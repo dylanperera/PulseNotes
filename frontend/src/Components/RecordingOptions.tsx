@@ -24,7 +24,7 @@ export default function RecordingOptions({
 			return <StartRecordingUI onStart={onStart} />;
 
 		case "recording":
-			return <PauseUI onPause={onPause}/>;
+			return <PauseUI onPause={onPause} />;
 
 		case "paused":
 			return <ResumeUI onResume={onResume} />;

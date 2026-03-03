@@ -18,10 +18,20 @@ class ModelServices():
 
         # Model sizes
         self.models = {
-                        "Llama-3.2-1B-Instruct-Q5_K_S.gguf": 0.893,
-                        "medi-phi": 2.1,
-                        "large-model": 4.9
+                        "Llama 3.2": {
+                            "file": "Llama-3.2-1B-Instruct-Q5_K_S.gguf",
+                            "size": 0.830
+                        },
+                        "Medi-Phi": {
+                            "file": "Mediphi...",
+                            "size": 2.3
+                        },
+                        "Large Model": {
+                            "file": "large-model",
+                            "size": 4.9
+                        },
                       }
+        
 
     def check_available_models(self, path):
 
@@ -40,7 +50,11 @@ class ModelServices():
         free_ram = self._bytes_to_gigabytes(ram_stats.available)
         free_local_space = self._bytes_to_gigabytes(disk_stats.free)
 
-        for name, size in self.models.items():
+        for name, info in self.models.items():
+
+            size = info["size"]
+            file_name = info["file"]
+
 
             model_dto = ModelAvailabilityDTO(model_name=name)
             
@@ -61,7 +75,7 @@ class ModelServices():
                 model_dto.usable_now = True
 
             # check if model exists in app data
-            if not self._check_if_model_exists(path, name):
+            if not self._check_if_model_exists(path, file_name):
                 model_dto.reason = "Model must be downloaded - Please connect to internet to try downloading"
                 continue
             else:
@@ -89,7 +103,7 @@ class ModelServices():
         try:
             hf_repo_url = os.getenv("HF_MODELS_REPO_ID", "DylanPerera1/pulsenotes-med-models")
             hf_hub_download(repo_id = hf_repo_url, 
-                            filename = model_name, 
+                            filename = self.models[model_name]["file"], 
                             local_dir = path,
                            )
         except:
@@ -101,8 +115,10 @@ class ModelServices():
 
         # Check if the model exists at the path
         try:
-            if self._check_if_model_exists(path, model_name):
-                os.remove(Path(path) / model_name)
+            file_name = self.models[model_name]["file"]
+
+            if self._check_if_model_exists(path, file_name):
+                os.remove(Path(path) / file_name)
                 return None
             else:
                 return ErrorMessage.MODEL_DOES_NOT_EXIST

@@ -9,6 +9,8 @@ from app.dtos.success_dto import SuccessDTO
 from app.dtos.error_dto import ErrorDTO
 from fastapi.middleware.cors import CORSMiddleware
 from app.enums.ErrorMessageEnum import ErrorMessage
+from huggingface_hub import login
+import os
 
 app = FastAPI()
 
@@ -18,6 +20,7 @@ app.add_middleware(CORSMiddleware,
                    allow_methods=["*"],
                    allow_headers=["*"])
 
+login(os.getenv("HF_TOKEN"))
 
 # Generic websocket endpoint
 @app.websocket("/ws")
@@ -99,7 +102,7 @@ async def download_model(model_name: str = "", path: str = "/"):
     
     return result
 
-@app.delete("/delete/", response_model=SuccessDTO)
+@app.delete("/models/delete", response_model=SuccessDTO)
 async def remove_model_from_disk(model_name: str = "", path: str = "/"):
 
     model_controller = ModelController()
