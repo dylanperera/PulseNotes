@@ -2,9 +2,7 @@ import TimerOutlinedIcon from "@mui/icons-material/TimerOutlined";
 import { useEffect, useMemo, useState } from "react";
 import "../assets/styles/globals.css";
 
-export default function Timer(props: {
-	isRecording: boolean;
-}) {
+export default function Timer(props: { isRecording: boolean }) {
 	const [time, setTime] = useState(0);
 
 	useEffect(() => {
@@ -25,9 +23,6 @@ export default function Timer(props: {
 				clearInterval(interval);
 			}
 		};
-
-
-
 	}, [props.isRecording]);
 
 	// Convert time from seconds to 00:00:00 format

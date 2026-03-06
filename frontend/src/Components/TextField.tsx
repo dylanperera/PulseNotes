@@ -5,7 +5,7 @@ type TextFieldProps = {
 	text: string;
 	setContent: (text: string) => void;
 	isRecording: boolean;
-	isLoading?: boolean
+	isLoading?: boolean;
 	placeHolder: string;
 	id: string;
 };
@@ -16,25 +16,26 @@ export default function TextField({
 	isRecording,
 	isLoading,
 	placeHolder,
-	id
+	id,
 }: TextFieldProps) {
-
 	const textArea = useRef<HTMLTextAreaElement>(null);
 
 	useEffect(() => {
-		if(textArea.current)
+		if (textArea.current)
 			textArea.current.scrollTop = textArea.current.scrollHeight;
-	}, [text])
+	}, [text]);
 
 	return (
 		<div className="text-area-container">
 			<textarea
-				id = {id}
-				ref = {textArea}
+				id={id}
+				ref={textArea}
 				className={`text-area ${isRecording ? "disabled" : ""} ${isLoading ? "summary-loading disabled" : ""}`}
-				placeholder={isLoading ? 'Generating Summary...' : placeHolder}
+				placeholder={isLoading ? "Generating Summary..." : placeHolder}
 				value={text}
-				onChange={(e) => { setContent(e.target.value) }}
+				onChange={(e) => {
+					setContent(e.target.value);
+				}}
 				disabled={isRecording || isLoading}
 			/>
 		</div>
