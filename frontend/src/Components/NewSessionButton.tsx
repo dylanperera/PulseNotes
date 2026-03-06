@@ -40,6 +40,7 @@ export default function NewSessionButton(props: { isRecording: boolean }) {
 						 modalText="All notes, transcripts, and documents tied to this session will be
 						permanently removed."
 						modalState={modalState}
+						primaryButtonColor="error"
 			/>
 		</div>
 	);

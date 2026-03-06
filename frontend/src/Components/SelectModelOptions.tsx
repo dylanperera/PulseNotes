@@ -17,8 +17,6 @@ import Tooltip from '@mui/material/Tooltip';
 import DeleteOutlinedIcon from '@mui/icons-material/DeleteOutlined';
 import IconButton from '@mui/material/IconButton';
 import FileDownloadOutlinedIcon from '@mui/icons-material/FileDownloadOutlined';
-import Typography from "@mui/material/Typography";
-import Box from "@mui/material/Box";
 import CustomModal from "./Modal";
 
 
@@ -91,19 +89,36 @@ export default function SelectModelOptions() {
 	const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
 	const open = Boolean(anchorEl);
 
-	// Everything related to the delete modal
 	const [modalState, setModalState] = useState<ModalState>("closed");
+	
+	// Everything related to the delete modal
 	const [deleteModelModalText, setDeleteModelModalText] = useState("Deleting a model means removing it from your device. Press confirm to remove model from device. This model can later be downloaded again when connected to internet");
 	const [modelToDelete, setModelToDelete] = useState("");
-	const [deleteModelOpen, setDeleteModelOpen] = useState(false);
-	const handleDeleteModelOpen = () => {
+	const [deleteModalOpen, setDeleteModalOpen] = useState(false);
+	const handleDeleteModalOpen = () => {
 		setModalState("confirm")
-		setDeleteModelOpen(true);
+		setDeleteModalOpen(true);
 	}
-	const handleDeleteModelClose = () => {
-		setDeleteModelOpen(false);
+	const handleDeleteModalClose = () => {
+		setDeleteModalOpen(false);
 		setModalState("closed");
 		setDeleteModelModalText("Deleting a model means removing it from your device. Press confirm to remove model from device. This model can later be downloaded again when connected to internet");
+	}
+
+	const [downloadModelModalStatusText, setDownloadModelModalStatusText] = useState("If you would like to download this model, please press the button below to start the download process");
+	const [modelToDownload, setModelToDownload] = useState("");
+	const [downloadModalOpen, setDownloadModalOpen] = useState(false);
+	const handleDownloadModalOpen = () => {
+		setModalState("confirm")
+		setDownloadModalOpen(true);
+	}
+	const handleDownloadModalClose = () => {
+		if(modalState === "loading")
+			return;
+		
+		setDownloadModalOpen(false);
+		setModalState("closed");
+		setDownloadModelModalStatusText("If you would like to download this model, please press the button below to start the download process");
 	}
 
 
@@ -180,9 +195,12 @@ export default function SelectModelOptions() {
 
 			fetchModels();
 		} catch (error: any) {
-			const err: ErrorDTO | undefined = error;
+    		const err = error.response?.data as ErrorDTO | undefined;
 
-			setDeleteModelModalText("Failed to delete model. Please try again or contact support.")
+			if(err === undefined)
+				setDeleteModelModalText("Unable to download model");
+			else
+				setDeleteModelModalText(err.message);
 		} finally {
 			setModalState("success");
 		}
@@ -190,27 +208,50 @@ export default function SelectModelOptions() {
 	
 	const downloadModel = async (modelName: string, path: string) => {
 		try {
+
+			setDownloadModelModalStatusText("Downloading... this may take a minute or two.");
+			setModalState("loading");
+
 			const url = `${END_POINT_URL}/models/download?model_name=${modelName}&path=${path}`;
 
 			await axios.get<SuccessDTO<DownloadResponseDTO>>(url);
 
+			setDownloadModelModalStatusText("Successfully downloaded model");
+
 			fetchModels();
 		} catch (error: any) {
-			const err: ErrorDTO | undefined = error;
+    		const err = error.response?.data.detail as ErrorDTO | undefined;
 
-			console.log(err);
+		
+			if(err === undefined)
+				setDownloadModelModalStatusText("Unable to download model");
+			else
+				setDownloadModelModalStatusText(err.message);
+		} finally {
+			setModalState("success");
 		}
 	}
 
 	return (
 		<div className="model-select">
-			<CustomModal open={deleteModelOpen} 
-						 onHandleClose={handleDeleteModelClose} 
+			<CustomModal open={deleteModalOpen} 
+						 onHandleClose={handleDeleteModalClose} 
 						 nextStepButtonName="Delete Model"
 						 nextStepCallback={async () => deleteModel(modelToDelete, PATH)}
 						 modalTitle="Confirm to Delete Model"
 						 modalText={deleteModelModalText}
 						 modalState={modalState}
+						 primaryButtonColor="error"
+			/>
+
+			<CustomModal open={downloadModalOpen} 
+						 onHandleClose={handleDownloadModalClose} 
+						 nextStepButtonName="Download Model"
+						 nextStepCallback={async () => downloadModel(modelToDownload, PATH)}
+						 modalTitle="Confirm to Download Model"
+						 modalText={downloadModelModalStatusText}
+						 modalState={modalState}
+						primaryButtonColor="primary"
 			/>
 
 			<Button
@@ -268,7 +309,7 @@ export default function SelectModelOptions() {
 										}} 
 										onClick={() => {
 											setModelToDelete(model.model_name);
-											handleDeleteModelOpen();
+											handleDeleteModalOpen();
 										}}
 										>
 											<DeleteOutlinedIcon sx={{
@@ -317,7 +358,10 @@ export default function SelectModelOptions() {
 											<IconButton sx={{ 
 												'borderRadius': '100%'
 											}} 
-											onClick={() => downloadModel(model.model_name, PATH)}
+											onClick={() => {
+												setModelToDownload(model.model_name);
+												handleDownloadModalOpen();
+											}}
 											>
 												<FileDownloadOutlinedIcon sx={{
 													marginRight: '0 !important'
@@ -354,7 +398,7 @@ export default function SelectModelOptions() {
 								}
 							}}
 							placement="right"
-							
+							id={model.model_name}
 							>
 								<div>
 									<MenuItem onClick={handleStart} disabled={true}>

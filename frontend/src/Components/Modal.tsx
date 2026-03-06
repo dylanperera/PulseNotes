@@ -2,7 +2,7 @@ import Box from "@mui/material/Box";
 import Button from "@mui/material/Button";
 import Modal from "@mui/material/Modal";
 import Typography from "@mui/material/Typography";
-import { useState } from 'react';
+import spinner from "../assets/images/spinner.svg";
 
 const style = {
 	position: "absolute",
@@ -35,9 +35,10 @@ type ModalProps = {
   modalTitle: string;
   modalText: string;
   modalState: ModalState;
+  primaryButtonColor: string;
 };
 
-export default function CustomModal({ open, onHandleClose, nextStepButtonName, nextStepCallback, modalText, modalTitle, modalState}: ModalProps)
+export default function CustomModal({ open, onHandleClose, nextStepButtonName, nextStepCallback, modalText, modalTitle, modalState, primaryButtonColor}: ModalProps)
 {
 
     return (
@@ -51,6 +52,19 @@ export default function CustomModal({ open, onHandleClose, nextStepButtonName, n
                     <Typography id="modal-modal-title" variant="h6" component="h2">
                                 <b> {modalTitle} </b>
                     </Typography>
+                    { modalState === "loading" && (
+                        <div
+                            style={{
+                                display: "flex",
+                                justifyContent: "center",
+                                gap: "1rem",
+                                paddingTop: "2.5rem",
+                                paddingBottom: "2rem"
+                            }}
+                        >
+                            <img src={spinner} alt="Spinner" />
+                        </div>
+                    )}
                     <Typography
                         id="modal-modal-description"
                         sx={{ mt: 1, mb: 3.5, color: "text.secondary" }}
@@ -69,7 +83,7 @@ export default function CustomModal({ open, onHandleClose, nextStepButtonName, n
                                 <Button
                                     onClick={() => nextStepCallback()}
                                     variant="contained"
-                                    color="error"
+                                    color={primaryButtonColor === "primary" ? "primary" : "error"}
                                     disableElevation
                                 >
                                     <b>{nextStepButtonName}</b>
@@ -89,25 +103,24 @@ export default function CustomModal({ open, onHandleClose, nextStepButtonName, n
 
                     { modalState === "success" && (
                         <div
-                                style={{
-                                    display: "flex",
-                                    justifyContent: "flex-end",
-                                    gap: "1rem",
+                            style={{
+                                display: "flex",
+                                justifyContent: "flex-end",
+                                gap: "1rem",
+                            }}
+                        >
+                            <Button
+                                onClick={onHandleClose}
+                                sx={{
+                                    color: "black",
+                                    padding: "0.5rem",
+                                    "&:hover": { backgroundColor: "rgba(0,0,0,0.1)" },
                                 }}
                             >
-                                <Button
-                                    onClick={onHandleClose}
-                                    sx={{
-                                        color: "black",
-                                        padding: "0.5rem",
-                                        "&:hover": { backgroundColor: "rgba(0,0,0,0.1)" },
-                                    }}
-                                >
-                                    <b>Close</b>
-                                </Button>
-                            </div>
+                                <b>Close</b>
+                            </Button>
+                        </div>
                     )}
-
                 </Box>
 		</Modal>
     )
