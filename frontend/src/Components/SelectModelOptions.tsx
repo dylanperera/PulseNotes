@@ -17,6 +17,10 @@ import Tooltip from '@mui/material/Tooltip';
 import DeleteOutlinedIcon from '@mui/icons-material/DeleteOutlined';
 import IconButton from '@mui/material/IconButton';
 import FileDownloadOutlinedIcon from '@mui/icons-material/FileDownloadOutlined';
+import Typography from "@mui/material/Typography";
+import Box from "@mui/material/Box";
+import CustomModal from "./Modal";
+
 
 // TODO: CHANGE THESE
 const END_POINT_URL = "http://127.0.0.1:8000";
@@ -80,10 +84,28 @@ const StyledMenu = styled((props: MenuProps) => (
 	},
 }));
 
+type ModalState = "confirm" | "loading" | "success" | "closed";
 
 export default function SelectModelOptions() {
+	
 	const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
 	const open = Boolean(anchorEl);
+
+	// Everything related to the delete modal
+	const [modalState, setModalState] = useState<ModalState>("closed");
+	const [deleteModelModalText, setDeleteModelModalText] = useState("Deleting a model means removing it from your device. Press confirm to remove model from device. This model can later be downloaded again when connected to internet");
+	const [modelToDelete, setModelToDelete] = useState("");
+	const [deleteModelOpen, setDeleteModelOpen] = useState(false);
+	const handleDeleteModelOpen = () => {
+		setModalState("confirm")
+		setDeleteModelOpen(true);
+	}
+	const handleDeleteModelClose = () => {
+		setDeleteModelOpen(false);
+		setModalState("closed");
+		setDeleteModelModalText("Deleting a model means removing it from your device. Press confirm to remove model from device. This model can later be downloaded again when connected to internet");
+	}
+
 
 	const handleClick = (event: MouseEvent<HTMLElement>) => {
 		setAnchorEl(event.currentTarget);
@@ -124,41 +146,45 @@ export default function SelectModelOptions() {
 	}, [models]);
 
 	useEffect(() => {
-		const fetchModels = async () => {
-			try {
-				const url = `${END_POINT_URL}/models`
-				const response = await axios.get<SuccessDTO<ModelAvailabilityDTO[]>>(url, { params: {"path":PATH}} )
-				
-				setModels(response.data.result);
-
-				console.log(response);
-
-			} catch (error: any) {
-				const err: ErrorDTO | undefined = error;
-
-				console.log(err);
-			}
-			
-		};
-
+		
 		fetchModels();
 	}, 
 	[]);
+
+	const fetchModels = async () => {
+		try {
+			const url = `${END_POINT_URL}/models`
+			const response = await axios.get<SuccessDTO<ModelAvailabilityDTO[]>>(url, { params: {"path":PATH}} )
+			
+			setModels(response.data.result);
+
+			console.log(response);
+
+		} catch (error: any) {
+			const err: ErrorDTO | undefined = error;
+
+			console.log(err);
+		}	
+	};
 
 	// Endpoint call to delete the model from the device
 	const deleteModel = async (modelName: string, path: string) => {
 		
 		try {
 			// Try to delete the model 
-			const url = `${END_POINT_URL}/delete?model_name=${modelName}&path=${path}`;
+			const url = `${END_POINT_URL}/models/delete?model_name=${modelName}&path=${path}`;
 
 			await axios.delete<SuccessDTO<DeleteResponseDTO>>(url);
 
-			// reload component?
+			setDeleteModelModalText("Successfully removed model from device")
+
+			fetchModels();
 		} catch (error: any) {
 			const err: ErrorDTO | undefined = error;
 
-			console.log(err);
+			setDeleteModelModalText("Failed to delete model. Please try again or contact support.")
+		} finally {
+			setModalState("success");
 		}
 	}
 	
@@ -167,6 +193,8 @@ export default function SelectModelOptions() {
 			const url = `${END_POINT_URL}/models/download?model_name=${modelName}&path=${path}`;
 
 			await axios.get<SuccessDTO<DownloadResponseDTO>>(url);
+
+			fetchModels();
 		} catch (error: any) {
 			const err: ErrorDTO | undefined = error;
 
@@ -176,6 +204,15 @@ export default function SelectModelOptions() {
 
 	return (
 		<div className="model-select">
+			<CustomModal open={deleteModelOpen} 
+						 onHandleClose={handleDeleteModelClose} 
+						 nextStepButtonName="Delete Model"
+						 nextStepCallback={async () => deleteModel(modelToDelete, PATH)}
+						 modalTitle="Confirm to Delete Model"
+						 modalText={deleteModelModalText}
+						 modalState={modalState}
+			/>
+
 			<Button
 				id="demo-customized-button"
 				aria-controls={open ? "demo-customized-menu" : undefined}
@@ -229,7 +266,10 @@ export default function SelectModelOptions() {
 											},
 											'borderRadius': '100%'
 										}} 
-										onClick={() => deleteModel(model.model_name, PATH)}
+										onClick={() => {
+											setModelToDelete(model.model_name);
+											handleDeleteModelOpen();
+										}}
 										>
 											<DeleteOutlinedIcon sx={{
 												marginRight: '0 !important'
