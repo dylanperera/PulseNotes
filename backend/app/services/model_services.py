@@ -20,11 +20,11 @@ class ModelServices():
         self.models = {
                         "Llama 3.2": {
                             "file": "Llama-3.2-1B-Instruct-Q5_K_S.gguf",
-                            "size": 0.830
+                            "size": 0.893
                         },
                         "Medi-Phi": {
-                            "file": "Mediphi...",
-                            "size": 2.3
+                            "file": "MediPhi-Clinical.i1-Q4_K_M.gguf",
+                            "size": 2.39
                         },
                         "Large Model": {
                             "file": "large-model",
@@ -59,6 +59,12 @@ class ModelServices():
             model_dto = ModelAvailabilityDTO(model_name=name)
             
             result.append(model_dto)
+
+            # check if model exists in app data
+            if not self._check_if_model_exists(path, file_name):
+                model_dto.reason = "Model must be downloaded - Please connect to internet to try downloading"
+            else:
+                model_dto.downloaded = True
             
             # Determine if model is even supported
             if (size * 2) > total_ram or free_local_space <= size:
@@ -73,13 +79,6 @@ class ModelServices():
                 continue
             else:
                 model_dto.usable_now = True
-
-            # check if model exists in app data
-            if not self._check_if_model_exists(path, file_name):
-                model_dto.reason = "Model must be downloaded - Please connect to internet to try downloading"
-                continue
-            else:
-                model_dto.downloaded = True
 
         return result
     

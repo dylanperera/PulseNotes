@@ -13,6 +13,55 @@ import SelectModelOptions from "../../Components/SelectModelOptions";
 import TextField from "../../Components/TextField";
 import Timer from "../../Components/Timer";
 
+const prompt: string = `
+        You are a clinical documentation assistant. Your job is to create a concise clinical SUMMARY and SOAP note based ONLY on what is stated in the conversation. You MUST NOT add, infer, or guess any medical details.
+
+        STRICT RULES (DO NOT BREAK THESE):
+        - Do NOT diagnose anything (no anxiety disorder, depression, cardiomyopathy, etc.).
+        - Do NOT suggest or imply causes of symptoms.
+        - Do NOT recommend treatments, coping strategies, lifestyle changes, or follow-up plans.
+        - Do NOT add tests, referrals, or medical actions unless explicitly stated by the doctor.
+        - Do NOT state or invent vital signs, normal results, abnormal results, or physical exam findings.
+        - Do NOT expand the plan beyond what the doctor actually said.
+        - Do NOT use terms like “should,” “needs to,” “likely,” “could indicate,” or similar inference language.
+
+        ALLOWED:
+        - ONLY describe what the patient and doctor explicitly said.
+        - You MAY summarize patterns using neutral phrasing such as:
+        “Based on the patient’s report…” 
+        “Symptoms tend to occur during…”
+        “The patient describes…”
+
+        FORMAT REQUIREMENTS:
+
+        SUMMARY (4 sentences):
+        - Include major symptoms, patterns, triggers, emotional themes, sleep issues, stressors, and patient goals.
+        - Keep it factual and clinically neutral.
+        - DO NOT give interpretations or advice.
+
+        SOAP NOTE:
+
+        Subjective:
+        - List ONLY patient-reported symptoms, stressors, emotional themes, sleep patterns, and concerns.
+        - No interpretations.
+
+        Objective:
+        - ONLY include objective findings if explicitly spoken by the doctor.
+        - If none were discussed, write: “No objective findings were discussed.”
+
+        Assessment:
+        - Summarize symptom patterns WITHOUT diagnosing or giving medical explanations.
+        - Use ONLY neutral phrasing, e.g., “Based on the patient’s report, symptoms tend to occur during…”
+        - Do NOT list any medical conditions.
+
+        Plan:
+        - ONLY include plan items explicitly stated by the doctor.
+        - If the doctor did not provide specific next steps, write:
+        “No specific plan was discussed in this conversation.”
+
+        Your output MUST stay strictly faithful to the transcript with zero added content.
+    `;
+
 type WSMessage =
 	| {
 			type: "transcription_token";
@@ -46,6 +95,8 @@ function TranscriptionPage() {
 	const hasStarted = useRef(false); // ref to check if recording has started summarizing (more of a safe-guard to remove the loading spinner)
 
 	const [isGeneratingSummary, setIsGeneratingSummary] = useState(false);
+
+	const [currentlyUsedModel, setCurrentlyUsedModel] = useState<string>("");
 
 	// Create websocket - There will be one web socket for both transcription and summarization
 	// This is to save on memory and latency (multiplexing)
@@ -87,6 +138,10 @@ function TranscriptionPage() {
 		setRecordingState("idle");
 	};
 
+	const handleSetModel = (model_name: string) => {
+		setCurrentlyUsedModel(model_name)
+	}
+
 	useEffect(() => {
 		if (!lastJsonMessage) return;
 
@@ -125,7 +180,13 @@ function TranscriptionPage() {
 
 		sendJsonMessage({
 			type: "transcription_chunk",
-			payload: transcript,
+			payload: {
+				raw_text: transcript,
+				prompt: prompt,
+				model_name: currentlyUsedModel,
+				service_name: "llama.cpp",
+				model_path: '/Users/dylanperera/Desktop/test_models/'
+			},
 		});
 
 		hasStarted.current = true;
@@ -160,12 +221,12 @@ function TranscriptionPage() {
 				<Calendar />
 
 				<div className="main-options">
-					<SelectModelOptions />
+					<SelectModelOptions currentlyUsedModel = {currentlyUsedModel}  handleSetModel={handleSetModel}/>
 
 					<button
-						className={`summarize-button ${isRecording === true || isGeneratingSummary === true ? "summarize-button-off" : "summarize-button-on"}`}
+						className={`summarize-button ${isRecording === true || isGeneratingSummary === true || currentlyUsedModel === "" ? "summarize-button-off" : "summarize-button-on"}`}
 						onClick={handleSummarizeClick}
-						disabled={isRecording === true || isGeneratingSummary === true}
+						disabled={isRecording === true || isGeneratingSummary === true || currentlyUsedModel === ""}
 						type="button"
 					>
 						<b>SUMMARIZE</b>

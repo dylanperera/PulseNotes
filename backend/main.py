@@ -65,7 +65,6 @@ async def web_socket_endpoint(websocket: WebSocket):
             elif msg_type == "transcription_chunk":
                 await summarization_controller.summarize_transcript(msg["payload"])
 
-
             elif msg_type == "close":
                 break
 

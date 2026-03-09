@@ -84,7 +84,12 @@ const StyledMenu = styled((props: MenuProps) => (
 
 type ModalState = "confirm" | "loading" | "success" | "closed";
 
-export default function SelectModelOptions() {
+type selectModelProps = {
+	currentlyUsedModel: string;
+	handleSetModel:  (model_name: string) => void;
+}
+
+export default function SelectModelOptions({currentlyUsedModel, handleSetModel}: selectModelProps) {
 	
 	const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
 	const open = Boolean(anchorEl);
@@ -126,19 +131,14 @@ export default function SelectModelOptions() {
 		setAnchorEl(event.currentTarget);
 	};
 
-	const handleStart = (event: MouseEvent<HTMLElement>) => {
-		
-		const modelName: string = event.currentTarget.textContent === null ? '' : event.currentTarget.textContent;
-
-		setCurrentlyUsedModel(modelName);
+	const handleStart = (modelName: string) => {
+		handleSetModel(modelName);		
 		setAnchorEl(null);
 	};
 
 	const handleClose = () => {
 		setAnchorEl(null);
 	};
-
-	const [currentlyUsedModel, setCurrentlyUsedModel] = useState<string>("");
 
 	const [userDataPath, setUserDataPath] = useState("");
 
@@ -172,8 +172,6 @@ export default function SelectModelOptions() {
 			const response = await axios.get<SuccessDTO<ModelAvailabilityDTO[]>>(url, { params: {"path":PATH}} )
 			
 			setModels(response.data.result);
-
-			console.log(response);
 
 		} catch (error: any) {
 			const err: ErrorDTO | undefined = error;
@@ -209,7 +207,7 @@ export default function SelectModelOptions() {
 	const downloadModel = async (modelName: string, path: string) => {
 		try {
 
-			setDownloadModelModalStatusText("Downloading... this may take a minute or two.");
+			setDownloadModelModalStatusText("Downloading... this may take a few minutes");
 			setModalState("loading");
 
 			const url = `${END_POINT_URL}/models/download?model_name=${modelName}&path=${path}`;
@@ -293,9 +291,37 @@ export default function SelectModelOptions() {
 				<StyledListHeader disableSticky>Ready to Use</StyledListHeader>
 				{ 
 					downloadedModels.map(model => {
-						return (<MenuItem disableRipple key={model.model_name}>
+						return (
+							<Tooltip title={model.reason} arrow
+							slotProps={{
+								popper: {
+								modifiers: [
+									{
+									name: 'offset',
+									options: {
+										offset: [0, -20],
+									},
+									},
+								],
+								},
+								tooltip: {
+									sx: {
+										fontSize: '0.9rem'
+									}
+								}
+							}}
+							placement="right"
+							key={model.model_name}
+							>
+								<MenuItem disableRipple key={model.model_name}>
 									<ListItemText
-										onClick={handleStart}
+										onClick={() => {
+											// REMOVE IF, TO TEST THE DIFFERENT MODELS THAT DONT FIT
+											if(model.reason === "" || model.reason === null)
+											{
+												handleStart(model.model_name);
+											}
+										}}
 										primary= { model.model_name }
 										// secondary="(Decides how long to think)"
 									/>
@@ -318,7 +344,8 @@ export default function SelectModelOptions() {
 										</IconButton>
 									</Tooltip>
 								</MenuItem>
-								);
+							</Tooltip>
+						);
 					})				
 				}
 				<Divider />
@@ -401,7 +428,7 @@ export default function SelectModelOptions() {
 							id={model.model_name}
 							>
 								<div>
-									<MenuItem onClick={handleStart} disabled={true}>
+									<MenuItem disabled={true}>
 									<ListItemText
 										primary= { model.model_name }
 										// secondary="(Decides how long to think)"
