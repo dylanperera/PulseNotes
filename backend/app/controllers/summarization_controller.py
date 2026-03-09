@@ -7,11 +7,17 @@ class SummarizationController(Controller):
     def __init__(self, websocket: WebSocket):
         self.websocket = websocket
     
-    async def summarize_transcript(self, raw_text: str, provider_name: str = "llama.cpp", model_name: str = "MediPhi-Clinical.i1-Q4_K_S.gguf"):
+    async def summarize_transcript(self, payload):
 
-        summarization_service = SummarizationService(provider_name, model_name)
+        raw_text: str = payload["raw_text"]
+        prompt: str = payload["prompt"]
+        provider_name: str = payload["service_name"]
+        model_name: str = payload["model_name"]
+        model_path: str = payload["model_path"]
 
-        summary_stream = summarization_service.get_summary_generator_object(raw_text=raw_text)
+        summarization_service = SummarizationService(provider_name, model_name, model_path)
+
+        summary_stream = summarization_service.get_summary_generator_object(raw_text=raw_text, prompt=prompt)
 
         await self.websocket.send_json({"type":"summary_token_start", "payload":"start"})
 

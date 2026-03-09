@@ -13,13 +13,13 @@ class SummarizationService():
     - streams summary output
     """
 
-    def __init__(self, provider_id:str, model_name:str):
+    def __init__(self, provider_id:str, model_name:str, model_path: str):
         try:
             if not provider_id or not model_name:
                 raise ValueError("Provider and model name required")
             
             if provider_id == "llama.cpp":
-                self._model_interface = LlamaCppInterface(model_name)
+                self._model_interface = LlamaCppInterface(model_name, model_path)
             else:
                 raise ValueError(f"Unknown provider: {provider_id}")
 
@@ -30,15 +30,15 @@ class SummarizationService():
             raise
 
     # Have a private method to distill/edit the incoming transcript - this would be like different slicing methods, etc., 
-    def _format_input(self, raw_text):
-        if not raw_text:
+    def _format_input(self, raw_text, prompt):
+        if not raw_text and not prompt:
             raise ValueError("Input text cannot be empty")
         return raw_text.strip() if isinstance(raw_text, str) else raw_text
 
     # Get the summary generator object
     def get_summary_generator_object(self, raw_text: str, prompt: str = None):
         try:
-            formatted_input = self._format_input(raw_text)
+            formatted_input = self._format_input(raw_text, prompt)
             summary_generator_object = self.summarization_agent.generator_function_get_next_token(prompt, formatted_input)
             return summary_generator_object
         except Exception as e:
