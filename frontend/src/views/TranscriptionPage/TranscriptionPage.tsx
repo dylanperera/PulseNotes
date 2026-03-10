@@ -10,11 +10,11 @@ import PatientName from "../../Components/PatientName";
 import RecordingOptions from "../../Components/RecordingOptions";
 import RichTextField from "../../Components/RichTextField";
 import SelectModelOptions from "../../Components/SelectModelOptions";
+import CustomPrompt from "../../Components/CustomPrompt";
 import TextField from "../../Components/TextField";
 import Timer from "../../Components/Timer";
 
-const prompt: string = `
-        You are a clinical documentation assistant. Your job is to create a concise clinical SUMMARY and SOAP note based ONLY on what is stated in the conversation. You MUST NOT add, infer, or guess any medical details.
+const initialPrompt: string = `You are a clinical documentation assistant. Your job is to create a concise clinical SUMMARY and SOAP note based ONLY on what is stated in the conversation. You MUST NOT add, infer, or guess any medical details.
 
         STRICT RULES (DO NOT BREAK THESE):
         - Do NOT diagnose anything (no anxiety disorder, depression, cardiomyopathy, etc.).
@@ -59,8 +59,7 @@ const prompt: string = `
         - If the doctor did not provide specific next steps, write:
         “No specific plan was discussed in this conversation.”
 
-        Your output MUST stay strictly faithful to the transcript with zero added content.
-    `;
+        Your output MUST stay strictly faithful to the transcript with zero added content.`;
 
 type WSMessage =
 	| {
@@ -97,6 +96,8 @@ function TranscriptionPage() {
 	const [isGeneratingSummary, setIsGeneratingSummary] = useState(false);
 
 	const [currentlyUsedModel, setCurrentlyUsedModel] = useState<string>("");
+
+	const [prompt, setPrompt] = useState<string> (initialPrompt);
 
 	// Create websocket - There will be one web socket for both transcription and summarization
 	// This is to save on memory and latency (multiplexing)
@@ -222,17 +223,6 @@ function TranscriptionPage() {
 
 				<div className="main-options">
 					<SelectModelOptions currentlyUsedModel = {currentlyUsedModel}  handleSetModel={handleSetModel}/>
-
-					<button
-						className={`summarize-button ${isRecording === true || isGeneratingSummary === true || currentlyUsedModel === "" ? "summarize-button-off" : "summarize-button-on"}`}
-						onClick={handleSummarizeClick}
-						disabled={isRecording === true || isGeneratingSummary === true || currentlyUsedModel === ""}
-						type="button"
-					>
-						<b>SUMMARIZE</b>
-						<AutoAwesomeIcon />
-					</button>
-
 					<ExportButton />
 				</div>
 			</div>
@@ -258,7 +248,18 @@ function TranscriptionPage() {
 
 			{/* Footer */}
 			<div className="footer">
-				<img src={logo} alt="Pulse Notes Logo" />
+				<CustomPrompt isLoading={isLoading} prompt={prompt} setPrompt={setPrompt}/>
+				<button
+						className={`summarize-button ${isRecording === true || isGeneratingSummary === true || currentlyUsedModel === "" ? "summarize-button-off" : "summarize-button-on"}`}
+						onClick={handleSummarizeClick}
+						disabled={isRecording === true || isGeneratingSummary === true || currentlyUsedModel === ""}
+						type="button"
+
+					>
+						<b>SUMMARIZE</b>
+						<AutoAwesomeIcon />
+				</button>
+				{/* <img src={logo} alt="Pulse Notes Logo" /> */}
 			</div>
 		</div>
 	);

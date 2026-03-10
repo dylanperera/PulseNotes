@@ -194,3 +194,38 @@
 .rich-text-editor .ProseMirror {
 	height: 100%;
 }
+
+.custom-prompt {
+	min-height: 2rem;
+	max-height: 25rem;
+	width: 97%;
+	border: 2px solid #ccc;
+	border-radius: 15px;
+	margin-right: 1rem;
+	padding: 10px;
+	outline: none;
+	background-color: #fafafa;
+	resize: vertical;
+  	box-sizing: border-box;
+}
+
+.custom-prompt.disabled {
+	background-color: #d8d8d8;
+}
+
+.custom-prompt-wrapper {
+  position: relative;
+  width: 100%;
+}
+
+.resize-bar {
+  position: absolute;
+  top: -2px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 40px;
+  height: 6px;
+  background: #bbb;
+  border-radius: 4px;
+  cursor: ns-resize;
+}
