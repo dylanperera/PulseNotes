@@ -143,6 +143,10 @@ function TranscriptionPage() {
 		setCurrentlyUsedModel(model_name)
 	}
 
+	const isSummaryDisabled = () => {
+		return isRecording === true || isGeneratingSummary === true || currentlyUsedModel === "" || prompt === "" || transcript === "";
+	}
+
 	useEffect(() => {
 		if (!lastJsonMessage) return;
 
@@ -250,9 +254,9 @@ function TranscriptionPage() {
 			<div className="footer">
 				<CustomPrompt isLoading={isLoading} prompt={prompt} setPrompt={setPrompt}/>
 				<button
-						className={`summarize-button ${isRecording === true || isGeneratingSummary === true || currentlyUsedModel === "" ? "summarize-button-off" : "summarize-button-on"}`}
+						className={`summarize-button ${isSummaryDisabled() ? "summarize-button-off" : "summarize-button-on"}`}
 						onClick={handleSummarizeClick}
-						disabled={isRecording === true || isGeneratingSummary === true || currentlyUsedModel === ""}
+						disabled={isSummaryDisabled()}
 						type="button"
 
 					>
