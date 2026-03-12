@@ -195,7 +195,7 @@ function TranscriptionPage() {
 				prompt: prompt,
 				model_name: currentlyUsedModel,
 				service_name: "llama.cpp",
-				model_path: '/Users/someshkarthi/Desktop/test_models'
+				model_path: '/Users/dylanperera/Desktop/test_models'
 			},
 		});
 
