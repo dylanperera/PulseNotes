@@ -8,39 +8,48 @@ from app.dtos.error_dto import ErrorDTO
 
 
 class ModelController(Controller):
-    
     def __init__(self):
         super().__init__()
         self.model_services = ModelServices()
 
-    def get_models_status(self, path):
+    def get_models_status(self):
 
-        result = self.model_services.check_available_models(path)
+        result = self.model_services.check_available_models()
 
         if isinstance(result, list):
-            return SuccessDTO(result = result, status_code=200)
+            return SuccessDTO(result=result, status_code=200)
         else:
-            return ErrorDTO(message=MESSAGE_MAP[result], status_code=ERROR_CODE_MAP[result])
+            return ErrorDTO(
+                message=MESSAGE_MAP[result],
+                status_code=ERROR_CODE_MAP[result]
+            )
 
-    
-    def download_new_model(self, path, model_name):
-        
-        result = self.model_services.download_model(path, model_name)
+    def download_new_model(self, model_name):
+
+        result = self.model_services.download_model(model_name)
 
         if result is None:
-            return SuccessDTO(result = DownloadResponseDTO(message="Successfully downloaded model"), status_code=200)
+            return SuccessDTO(
+                result=DownloadResponseDTO(message="Successfully downloaded model"),
+                status_code=200
+            )
         else:
-            return ErrorDTO(message=MESSAGE_MAP[result], status_code=ERROR_CODE_MAP[result])
+            return ErrorDTO(
+                message=MESSAGE_MAP[result],
+                status_code=ERROR_CODE_MAP[result]
+            )
 
-    def remove_model_from_disk(self, path, model):
-        
-        result = self.model_services.delete_model(path, model)
+    def remove_model_from_disk(self, model_name):
+
+        result = self.model_services.delete_model(model_name)
 
         if result is None:
-            return SuccessDTO(result = DeleteResponseDTO(message="Successfully deleted model"), status_code=200)
+            return SuccessDTO(
+                result=DeleteResponseDTO(message="Successfully deleted model"),
+                status_code=200
+            )
         else:
-            return ErrorDTO(message=MESSAGE_MAP[result], status_code=ERROR_CODE_MAP[result])
-
-    
-
-    
+            return ErrorDTO(
+                message=MESSAGE_MAP[result],
+                status_code=ERROR_CODE_MAP[result]
+            )

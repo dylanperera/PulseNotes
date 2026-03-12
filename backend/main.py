@@ -1,5 +1,6 @@
 from app.controllers.transcription_controller import TranscriptionController
 from app.services.transcription_service import TranscriptionService
+from app.services.audio.audio_capture_service import AudioCapture
 from app.models.asr.adapters.pywhispercpp_adapter import PyWhisperCppAdapter
 from fastapi import FastAPI, HTTPException, WebSocket, WebSocketDisconnect, status
 from app.controllers.summarization_controller import SummarizationController
@@ -11,6 +12,7 @@ from fastapi.middleware.cors import CORSMiddleware
 from app.enums.ErrorMessageEnum import ErrorMessage
 from huggingface_hub import login
 import os
+from app.registry.model_registry import MODEL_REGISTRY
 
 app = FastAPI()
 
@@ -32,14 +34,7 @@ async def web_socket_endpoint(websocket: WebSocket):
 
         summarization_controller = SummarizationController(websocket)
 
-        transcription_service = TranscriptionService(
-            asr_model="whispercpp"
-        )
-
-        transcription_controller = TranscriptionController(
-            websocket=websocket,
-            service=transcription_service
-        )
+        transcription_controller = None
 
         while True:
             msg = await websocket.receive_json()
@@ -48,19 +43,38 @@ async def web_socket_endpoint(websocket: WebSocket):
             # add something for audio input
             if msg_type == "start_transcription":
                 print("recieved start transcription message from frontend")
+                model = msg.get("model", "small")  # default to small if not provided
+                device_id = msg.get("device_id", None)  # get microphone device id (None = default)
+                valid_models = ["tiny", "base", "small", "medium", "large"]
+                if model not in valid_models:
+                    await websocket.send_json({"type": "error", "message": f"Invalid model: {model}. Valid models: {valid_models}"})
+                    continue
+                transcription_service = TranscriptionService(
+                    asr_model="whispercpp",
+                    transcription_model=model,
+                    device_id=device_id
+                )
+                transcription_controller = TranscriptionController(
+                    websocket=websocket,
+                    service=transcription_service
+                )
                 await transcription_controller.start()
 
             elif msg_type == "stop_transcription":
                 print("recieved stop transcription from the frontend")
-                await transcription_controller.stop()
+                if transcription_controller:
+                    await transcription_controller.stop()
+                    transcription_controller = None
 
             elif msg_type == "resume_transcription":
                 print("resuming transcription")
-                await transcription_controller.resume()
+                if transcription_controller:
+                    await transcription_controller.resume()
 
             elif msg_type == "pause_transcription":
                 print("pausing transcription")
-                await transcription_controller.pause()
+                if transcription_controller:
+                    await transcription_controller.pause()
 
             elif msg_type == "transcription_chunk":
                 await summarization_controller.summarize_transcript(msg["payload"])
@@ -77,39 +91,51 @@ async def web_socket_endpoint(websocket: WebSocket):
 
     await websocket.close()
 
-@app.get('/models', response_model=SuccessDTO) 
-async def get_models(path: str = "/"):
+@app.get('/audio-devices')
+async def get_audio_devices():
+    """Get list of available audio input devices"""
+    try:
+        devices = AudioCapture.get_available_devices()
+        return SuccessDTO(
+            result=devices,
+            status_code=200
+        )
+    except Exception as e:
+        print(f"Error getting audio devices: {e}")
+        return ErrorDTO(
+            message="Failed to get audio devices",
+            status_code=500
+        )
 
+@app.get('/models', response_model=SuccessDTO)
+async def get_models():
     model_controller = ModelController()
 
-    result: SuccessDTO | ErrorDTO = model_controller.get_models_status(path)
+    result: SuccessDTO | ErrorDTO = model_controller.get_models_status()
 
     if(isinstance(result, ErrorDTO)):
         raise HTTPException(status_code=result.status_code, detail=result.model_dump())
-    
     return result
 
 
-@app.get("/models/download", response_model=SuccessDTO)
-async def download_model(model_name: str = "", path: str = "/"):
+@app.post("/models/download", response_model=SuccessDTO)
+async def download_model(model_name: str = ""):
 
     model_controller = ModelController()
-    result: SuccessDTO | ErrorDTO = model_controller.download_new_model(path, model_name)
+    result: SuccessDTO | ErrorDTO = model_controller.download_new_model(model_name)
 
     if(isinstance(result, ErrorDTO)):
         raise HTTPException(status_code=result.status_code, detail=result.model_dump())
-    
     return result
 
 @app.delete("/models/delete", response_model=SuccessDTO)
-async def remove_model_from_disk(model_name: str = "", path: str = "/"):
+async def remove_model_from_disk(model_name: str = ""):
 
     model_controller = ModelController()
-    result: SuccessDTO | ErrorDTO = model_controller.remove_model_from_disk(path, model_name)
+    result: SuccessDTO | ErrorDTO = model_controller.remove_model_from_disk(model_name)
 
     if(isinstance(result, ErrorDTO)):
         raise HTTPException(status_code=result.status_code, detail=result.model_dump())
-    
     return result
 
 

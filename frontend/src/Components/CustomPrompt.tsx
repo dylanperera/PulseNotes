@@ -3,7 +3,7 @@ import { useRef } from 'react';
 type CustomPromptProps = {
     isLoading: boolean;
     prompt: string;
-    setPrompt: React.Dispatch<React.SetStateAction<string>>;
+    setPrompt: (prompt: string) => void;
 }
 
 export default function CustomPrompt({isLoading, prompt, setPrompt}: CustomPromptProps)
@@ -38,12 +38,12 @@ export default function CustomPrompt({isLoading, prompt, setPrompt}: CustomPromp
         <div className="custom-prompt-wrapper">
             <div className="resize-bar" onMouseDown={startResize}></div>
 
-            <textarea disabled={isLoading} 
+            <textarea disabled={isLoading}
                       className={`custom-prompt ${ isLoading === true ? 'disabled' : ''}`}
                       onChange={handlePromptChange}
                       ref={textareaRef}>
                     {prompt}
             </textarea>
-        </div> 
+        </div>
     )
 }
