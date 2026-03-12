@@ -11,21 +11,35 @@ class LlamaCppInterface(ModelInterface):
 
     def __init__(self, model_name:str, model_path: str):
         self.num_threads = max(multiprocessing.cpu_count() // 2, 1)  # Use half the cores available
-        
+
+        # self.models = {
+        #                 "Llama 3.2": {
+        #                     "file": "Llama-3.2-1B-Instruct-Q5_K_S.gguf",
+        #                     "size": 0.893
+        #                 },
+        #                 "Medi-Phi": {
+        #                     "file": "MediPhi-Clinical.i1-Q4_K_M.gguf",
+        #                     "size": 2.39
+        #                 },
+        #                 "Large Model": {
+        #                     "file": "large-model",
+        #                     "size": 4.9
+        #                 },
+        #               }
         self.models = {
-                        "Llama 3.2": {
-                            "file": "Llama-3.2-1B-Instruct-Q5_K_S.gguf",
-                            "size": 0.893
-                        },
-                        "Medi-Phi": {
-                            "file": "MediPhi-Clinical.i1-Q4_K_M.gguf",
-                            "size": 2.39
-                        },
-                        "Large Model": {
-                            "file": "large-model",
-                            "size": 4.9
-                        },
-                      }
+            "llama32": {
+                "file": "Llama-3.2-1B-Instruct-Q5_K_S.gguf",
+                "size": 0.893
+            },
+            "mediphi": {
+                "file": "MediPhi-Clinical.i1-Q4_K_M.gguf",
+                "size": 2.39
+            },
+            "large": {
+                "file": "large-model",
+                "size": 4.9
+            },
+        }
 
         try:
             # Select correct model given the model name from user
@@ -45,12 +59,10 @@ class LlamaCppInterface(ModelInterface):
     def generate_summary(self, prompt: str, input: str):
 
         output = self._summarize_transcript(prompt, input, False)
-        
-        return output 
+        return output
 
     # Generate summary with streaming enabled
     def generate_streamed_summary(self, prompt: str, input: str):
-        
         output = self._summarize_transcript(prompt, input, True)
 
         return output
@@ -62,7 +74,6 @@ class LlamaCppInterface(ModelInterface):
         try:
             if not prompt or not input:
                 raise ValueError("Prompt and input cannot be empty")
-            
             messages = [
                 {
                     "role": "system",
@@ -92,5 +103,3 @@ class LlamaCppInterface(ModelInterface):
         except Exception as e:
             logger.error(f"Model inference failed: {e}")
             raise
-
-        return output

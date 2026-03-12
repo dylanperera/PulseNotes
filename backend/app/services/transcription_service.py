@@ -17,11 +17,11 @@ class TranscriptionService():
     # asr_model defines which model we are using for preprocessing
     #   -> this is needed to instantiate our audio preprocessor and use the correct model configs
 
-    def __init__(self, asr_model: str):
-        self.audio_capture = AudioCapture() # audio capture interface
+    def __init__(self, asr_model: str, transcription_model: str = "small", device_id=None):
+        self.audio_capture = AudioCapture(device_id=device_id) # audio capture interface
         self.audio_preprocessor = AudioPreprocessor(asr_model, self.audio_capture.sample_rate) # audio preprocessor interface
         self.transcription_adapter = PyWhisperCppAdapter(
-            model="small",
+            model=transcription_model,
             sample_rate=self.audio_capture.sample_rate
         )
 

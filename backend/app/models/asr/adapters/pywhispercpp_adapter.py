@@ -46,6 +46,19 @@ class PyWhisperCppAdapter(TranscriptionAdapter):
         self.processed_samples = 0
         self.last_text = ""
 
+    def _clean_text(self, text: str) -> str:
+        junk_tokens = [
+            "[BLANK_AUDIO]",
+            "[MUSIC]",
+            "[NOISE]",
+            "[LAUGHTER]",
+        ]
+
+        for token in junk_tokens:
+            text = text.replace(token, "")
+
+        return text.strip()
+
     def transcribe(self, finalize: bool = False):
         """
         Run transcription on NEW audio only.
@@ -63,6 +76,7 @@ class PyWhisperCppAdapter(TranscriptionAdapter):
 
         result = self.model.transcribe(audio)
         text = result[0].text.strip()
+        text = self._clean_text(text)
 
         if not text or text == self.last_text:
             return

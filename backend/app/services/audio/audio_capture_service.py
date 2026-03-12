@@ -21,12 +21,13 @@ class AudioCapture:
             running: boolean to determine if the audio capture system is running (actively recording)
             paused: boolean to determine if the audio capture system is paused (still running, but not capturing)
     """
-    def __init__(self, sample_rate=16000, channels=1, chunk_duration=0.25, dtype='float32'):
+    def __init__(self, sample_rate=16000, channels=1, chunk_duration=0.25, dtype='float32', device_id=None):
         self.sample_rate = sample_rate
         self.channels = channels
         self.dtype = dtype
         self.chunk_duration = chunk_duration
         self.chunk_size = int(sample_rate * chunk_duration)
+        self.device_id = device_id  # microphone device ID (None = default device)
         # internal use
         self.stream = None
         self.audio_queue = queue.Queue(maxsize=10) # check this.. may lead to dropped audio
@@ -55,6 +56,7 @@ class AudioCapture:
             channels=self.channels,
             blocksize=self.chunk_size,
             dtype=self.dtype,
+            device=self.device_id,  # use selected device (None = default)
             callback=self._record
         )
 
@@ -154,3 +156,24 @@ class AudioCapture:
             Method that recieves and captures audio from a AUDIO FILE; FOR FUTURE IMPLEMENTATION
         """
         pass
+
+    @staticmethod
+    def get_available_devices():
+        """
+            Returns a list of available input devices with their IDs and names.
+            Returns:
+                list: List of dicts with 'id', 'name', and 'channels' for each input device
+        """
+        devices = sd.query_devices()
+        available_devices = []
+
+        for i, device in enumerate(devices):
+            # Only include input devices (max_input_channels > 0)
+            if device['max_input_channels'] > 0:
+                available_devices.append({
+                    'id': i,
+                    'name': device['name'],
+                    'channels': device['max_input_channels']
+                })
+
+        return available_devices

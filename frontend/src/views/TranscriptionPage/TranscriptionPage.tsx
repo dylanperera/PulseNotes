@@ -11,9 +11,14 @@ import PatientName from "../../Components/PatientName";
 import RecordingOptions from "../../Components/RecordingOptions";
 import RichTextField from "../../Components/RichTextField";
 import SelectModelOptions from "../../Components/SelectModelOptions";
-import CustomPrompt from "../../Components/CustomPrompt";
 import TextField from "../../Components/TextField";
 import Timer from "../../Components/Timer";
+import SettingsModal from "../../Components/SettingsModal";
+import SettingsIcon from "@mui/icons-material/Settings";
+import { Chip } from "@mui/material";
+import Snackbar from "@mui/material/Snackbar";
+import Alert from "@mui/material/Alert";
+
 
 const initialPrompt: string = `You are a clinical documentation assistant. Your job is to create a concise clinical SUMMARY and SOAP note based ONLY on what is stated in the conversation. You MUST NOT add, infer, or guess any medical details.
 
@@ -29,7 +34,7 @@ const initialPrompt: string = `You are a clinical documentation assistant. Your 
         ALLOWED:
         - ONLY describe what the patient and doctor explicitly said.
         - You MAY summarize patterns using neutral phrasing such as:
-        “Based on the patient’s report…” 
+        “Based on the patient’s report…”
         “Symptoms tend to occur during…”
         “The patient describes…”
 
@@ -102,6 +107,13 @@ function TranscriptionPage() {
 
 	const [currentlyUsedModel, setCurrentlyUsedModel] = useState<string>("");
 
+	const [selectedTranscriptionModel, setSelectedTranscriptionModel] = useState<string>("small");
+
+	const [errorMessage, setErrorMessage] = useState<string | null>(null);
+	const [selectedMicrophoneDeviceId, setSelectedMicrophoneDeviceId] = useState<number | null>(null);
+
+	const [isSettingsModalOpen, setIsSettingsModalOpen] = useState(false);
+
 	const [prompt, setPrompt] = useState<string> (initialPrompt);
 
 	// Create websocket - There will be one web socket for both transcription and summarization
@@ -116,7 +128,27 @@ function TranscriptionPage() {
 		if (readyState !== ReadyState.OPEN) return;
 		if (recordingState !== "idle") return;
 
-		sendJsonMessage({ type: "start_transcription" });
+		// validation
+		if (!selectedTranscriptionModel) {
+			setErrorMessage("Please select a transcription model in settings.");
+			return;
+		}
+
+		if (!currentlyUsedModel) {
+			setErrorMessage("Please select a summarization model in settings.");
+			return;
+		}
+
+		if (selectedMicrophoneDeviceId === null) {
+			setErrorMessage("Please select a microphone in settings.");
+			return;
+		}
+
+		sendJsonMessage({
+			type: "start_transcription",
+			model: selectedTranscriptionModel,
+			device_id: selectedMicrophoneDeviceId
+		});
 		setRecordingState("recording");
 	};
 
@@ -195,7 +227,7 @@ function TranscriptionPage() {
 				prompt: prompt,
 				model_name: currentlyUsedModel,
 				service_name: "llama.cpp",
-				model_path: '/Users/dylanperera/Desktop/test_models'
+				model_path: '/Users/jaydenferrer/Desktop/test_models/'
 			},
 		});
 
@@ -216,6 +248,42 @@ function TranscriptionPage() {
 				</div>
 
 				<div className="main-options">
+
+				<div
+					style={{
+						display: "flex",
+						gap: "8px",
+						justifyContent: "center",
+						alignItems: "center",
+						flex: 1
+					}}
+				>
+					<Chip
+						size="small"
+						label={`Speech: ${selectedTranscriptionModel}`}
+					/>
+
+					<Chip
+						size="small"
+						label={`Summary: ${currentlyUsedModel || "None"}`}
+					/>
+
+				</div>
+
+					<button
+						style={{
+							backgroundColor: "transparent",
+							border: "none",
+							cursor: "pointer",
+							display: "flex",
+							alignItems: "center",
+							gap: "4px",
+						}}
+						onClick={() => setIsSettingsModalOpen(true)}
+						title="Open settings"
+					>
+						<SettingsIcon sx={{ fontSize: 24, color: "#333" }} />
+					</button>
 					<Timer isRecording={isRecording} />
 					<RecordingOptions
 						recordingState={recordingState}
@@ -261,20 +329,53 @@ function TranscriptionPage() {
 			</div>
 
 			{/* Footer */}
-			<div className="footer">
-				<CustomPrompt isLoading={isLoading} prompt={prompt} setPrompt={setPrompt}/>
-				<button
-						className={`summarize-button ${isSummaryDisabled() ? "summarize-button-off" : "summarize-button-on"}`}
-						onClick={handleSummarizeClick}
-						disabled={isSummaryDisabled()}
-						type="button"
+			{/* IF WE WANT THE PROMPT TO STAY ON THE MAIN SCREEN, KEEP THIS HERE */}
+			{
+			// 	<div className="footer">
+			// 	<CustomPrompt isLoading={isLoading} prompt={prompt} setPrompt={setPrompt}/>
+			// 	<button
+			// 			className={`summarize-button ${isSummaryDisabled() ? "summarize-button-off" : "summarize-button-on"}`}
+			// 			onClick={handleSummarizeClick}
+			// 			disabled={isSummaryDisabled()}
+			// 			type="button"
 
-					>
-						<b>SUMMARIZE</b>
-						<AutoAwesomeIcon />
-				</button>
-				{/* <img src={logo} alt="Pulse Notes Logo" /> */}
-			</div>
+			// 		>
+			// 			<b>SUMMARIZE</b>
+			// 			<AutoAwesomeIcon />
+			// 	</button>
+			// 	{/* <img src={logo} alt="Pulse Notes Logo" /> */}
+			// </div>
+			}
+
+		<SettingsModal
+			open={isSettingsModalOpen}
+			onClose={() => setIsSettingsModalOpen(false)}
+			selectedTranscriptionModel={selectedTranscriptionModel}
+			onTranscriptionModelChange={setSelectedTranscriptionModel}
+			selectedSummarizationModel={currentlyUsedModel} // note we might want to change the name of this for better readability
+			// this is specifically the currentlyUsed for summarization
+			onSummarizationModelChange={setCurrentlyUsedModel}
+			prompt={prompt}
+			onPromptChange={setPrompt}
+			selectedMicrophoneDeviceId={selectedMicrophoneDeviceId}
+			onMicrophoneChange={setSelectedMicrophoneDeviceId}
+		/>
+
+		<Snackbar
+			open={errorMessage !== null}
+			autoHideDuration={4000}
+			onClose={() => setErrorMessage(null)}
+			anchorOrigin={{ vertical: "bottom", horizontal: "center" }}
+		>
+			<Alert
+				onClose={() => setErrorMessage(null)}
+				severity="error"
+				variant="filled"
+			>
+				{errorMessage}
+			</Alert>
+		</Snackbar>
+
 		</div>
 	);
 }
