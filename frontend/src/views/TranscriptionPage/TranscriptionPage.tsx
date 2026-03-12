@@ -299,7 +299,7 @@ function TranscriptionPage() {
 				<Calendar value={dateTime} onChange={setDateTime} />
 
 				<div className="main-options">
-					<SelectModelOptions currentlyUsedModel = {currentlyUsedModel}  handleSetModel={handleSetModel}/>
+					{/* <SelectModelOptions currentlyUsedModel = {currentlyUsedModel}  handleSetModel={handleSetModel}/> */}
 					<ExportButton
 						htmlContent={summaryHtml}
 						patientName={patientName}
