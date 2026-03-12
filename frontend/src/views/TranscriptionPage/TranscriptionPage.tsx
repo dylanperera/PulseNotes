@@ -2,6 +2,7 @@ import { useEffect, useRef, useState } from "react";
 import "./TranscriptionPage.css";
 import AutoAwesomeIcon from "@mui/icons-material/AutoAwesome";
 import useWebSocket, { ReadyState } from "react-use-websocket";
+import dayjs, { type Dayjs } from "dayjs";
 import logo from "../../assets/images/PulseNotesTransparent.png";
 import Calendar from "../../Components/Calendar";
 import ExportButton from "../../Components/ExportButton";
@@ -86,6 +87,9 @@ function TranscriptionPage() {
 	const WS_URL = "ws://127.0.0.1:8000/ws";
 
 	const [recordingState, setRecordingState] = useState<RecordingState>("idle");
+
+	const [patientName, setPatientName] = useState("");
+	const [dateTime, setDateTime] = useState<Dayjs | null>(dayjs());
 
 	const [transcript, setTranscript] = useState("");
 	const [summary, setSummary] = useState("");
@@ -207,7 +211,7 @@ function TranscriptionPage() {
 			{/* Header */}
 			<div className="top-level-header">
 				<div style={{ display: "flex" }}>
-					<PatientName />
+					<PatientName value={patientName} onChange={setPatientName} />
 					<NewSessionButton isRecording={isRecording} />
 				</div>
 
@@ -224,11 +228,15 @@ function TranscriptionPage() {
 			</div>
 
 			<div className="second-level-header">
-				<Calendar />
+				<Calendar value={dateTime} onChange={setDateTime} />
 
 				<div className="main-options">
 					<SelectModelOptions currentlyUsedModel = {currentlyUsedModel}  handleSetModel={handleSetModel}/>
-					<ExportButton htmlContent={summaryHtml} />
+					<ExportButton
+						htmlContent={summaryHtml}
+						patientName={patientName}
+						dateTime={dateTime?.format("MMMM D, YYYY h:mm A") ?? ""}
+					/>
 				</div>
 			</div>
 

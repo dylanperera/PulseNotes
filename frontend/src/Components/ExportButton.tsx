@@ -11,6 +11,8 @@ import * as React from "react";
 
 type ExportButtonProps = {
 	htmlContent: string;
+	patientName: string;
+	dateTime: string;
 };
 
 type TextSegment = {
@@ -66,7 +68,7 @@ function extractSegments(
 	return segments;
 }
 
-function exportToPdf(html: string) {
+function exportToPdf(html: string, patientName: string, dateTime: string) {
 	const doc = new jsPDF({ unit: "pt", format: "letter" });
 	const pageWidth = doc.internal.pageSize.getWidth();
 	const pageHeight = doc.internal.pageSize.getHeight();
@@ -77,6 +79,35 @@ function exportToPdf(html: string) {
 
 	let cursorX = margin;
 	let cursorY = margin + fontSize;
+
+	// --- Header ---
+	const headerFontSize = 16;
+	const subHeaderFontSize = 11;
+
+	if (patientName) {
+		doc.setFont("Helvetica", "bold");
+		doc.setFontSize(headerFontSize);
+		doc.text(patientName, margin, cursorY);
+		cursorY += headerFontSize * 1.4;
+	}
+
+	if (dateTime) {
+		doc.setFont("Helvetica", "normal");
+		doc.setFontSize(subHeaderFontSize);
+		doc.setTextColor(100, 100, 100);
+		doc.text(dateTime, margin, cursorY);
+		cursorY += subHeaderFontSize * 1.4;
+	}
+
+	if (patientName || dateTime) {
+		cursorY += 4;
+		doc.setDrawColor(200, 200, 200);
+		doc.setLineWidth(0.75);
+		doc.line(margin, cursorY, margin + maxWidth, cursorY);
+		cursorY += lineHeight;
+	}
+
+	doc.setTextColor(0, 0, 0);
 
 	const container = document.createElement("div");
 	container.innerHTML = html;
@@ -158,7 +189,12 @@ function exportToPdf(html: string) {
 	doc.save("summary.pdf");
 }
 
-function exportToWord(html: string) {
+function exportToWord(html: string, patientName: string, dateTime: string) {
+	const headerHtml = `
+		${patientName ? `<h2 style="margin:0 0 2px 0; font-size:16pt; color:#000;">${patientName}</h2>` : ""}
+		${dateTime ? `<p style="margin:0 0 8px 0; font-size:11pt; color:#646464;">${dateTime}</p>` : ""}
+		${patientName || dateTime ? '<hr style="border:none; border-top:1px solid #c8c8c8; margin-bottom:12px;" />' : ""}`;
+
 	const fullHtml = `
 		<html xmlns:o="urn:schemas-microsoft-com:office:office"
 		      xmlns:w="urn:schemas-microsoft-com:office:word"
@@ -168,7 +204,7 @@ function exportToWord(html: string) {
 			body { font-family: Arial, Helvetica, sans-serif; font-size: 12pt; line-height: 1.6; color: #000; }
 		</style>
 		</head>
-		<body>${html}</body>
+		<body>${headerHtml}${html}</body>
 		</html>`;
 
 	const blob = new Blob(["\ufeff", fullHtml], { type: "application/msword" });
@@ -225,7 +261,7 @@ const StyledMenu = styled((props: MenuProps) => (
 	},
 }));
 
-export default function ExportButton({ htmlContent }: ExportButtonProps) {
+export default function ExportButton({ htmlContent, patientName, dateTime }: ExportButtonProps) {
 	const [anchorEl, setAnchorEl] = React.useState<null | HTMLElement>(null);
 	const open = Boolean(anchorEl);
 
@@ -239,13 +275,13 @@ export default function ExportButton({ htmlContent }: ExportButtonProps) {
 	const handleExportWord = () => {
 		setAnchorEl(null);
 		if (isContentEmpty(htmlContent)) return;
-		exportToWord(htmlContent);
+		exportToWord(htmlContent, patientName, dateTime);
 	};
 
 	const handleExportPdf = () => {
 		setAnchorEl(null);
 		if (isContentEmpty(htmlContent)) return;
-		exportToPdf(htmlContent);
+		exportToPdf(htmlContent, patientName, dateTime);
 	};
 
 	const disabled = isContentEmpty(htmlContent);
