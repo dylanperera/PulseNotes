@@ -1,11 +1,14 @@
 import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
 import { DateTimePicker } from "@mui/x-date-pickers/DateTimePicker";
 import { LocalizationProvider } from "@mui/x-date-pickers/LocalizationProvider";
-import dayjs, { type Dayjs } from "dayjs";
-import * as React from "react";
+import type { Dayjs } from "dayjs";
 
-export default function DateTimePickerValue() {
-	const [value, setValue] = React.useState<Dayjs | null>(dayjs());
+type CalendarProps = {
+	value: Dayjs | null;
+	onChange: (value: Dayjs | null) => void;
+};
+
+export default function DateTimePickerValue({ value, onChange }: CalendarProps) {
 
 	return (
 		<div className="calendar">
@@ -14,7 +17,7 @@ export default function DateTimePickerValue() {
 				<DateTimePicker
 					label="Date"
 					value={value}
-					onChange={(newValue) => setValue(newValue)}
+					onChange={(newValue) => onChange(newValue)}
 					slotProps={{
 						textField: {
 							sx: {
