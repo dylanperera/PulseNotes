@@ -8,7 +8,6 @@ type Props = {
 	id?: string;
 	text: string;
 	setContent: (value: string) => void;
-	setHtmlContent?: (html: string) => void;
 	isRecording: boolean;
 	isLoading: boolean;
 	placeHolder?: string;
@@ -17,7 +16,6 @@ type Props = {
 function RichTextField({
 	text,
 	setContent,
-	setHtmlContent,
 	isRecording,
 	isLoading,
 	placeHolder,
@@ -33,9 +31,9 @@ function RichTextField({
 		content: "",
 		editable: !(isRecording || isLoading),
 
+		// User edits
 		onUpdate: ({ editor }) => {
 			setContent(editor.getText());
-			setHtmlContent?.(editor.getHTML());
 		},
 	});
 
@@ -50,7 +48,6 @@ function RichTextField({
 
 		if (!isLoading && text && editor.getText() !== text) {
 			editor.commands.setContent(textToHTML(text), { emitUpdate: false });
-			setHtmlContent?.(editor.getHTML());
 		}
 	}, [editor, text, isLoading]);
 

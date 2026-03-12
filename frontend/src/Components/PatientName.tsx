@@ -4,12 +4,7 @@ import TextField from "@mui/material/TextField";
 import "../assets/styles/globals.css";
 import InputAdornment from "@mui/material/InputAdornment";
 
-type PatientNameProps = {
-	value: string;
-	onChange: (name: string) => void;
-};
-
-export default function PatientName({ value, onChange }: PatientNameProps) {
+export default function PatientName() {
 	return (
 		<div className="patient-name-input">
 			<Box
@@ -23,8 +18,6 @@ export default function PatientName({ value, onChange }: PatientNameProps) {
 					id="standard-basic"
 					label="Patient Name"
 					variant="standard"
-					value={value}
-					onChange={(e) => onChange(e.target.value)}
 					slotProps={{
 						input: {
 							startAdornment: (
@@ -35,12 +28,15 @@ export default function PatientName({ value, onChange }: PatientNameProps) {
 						},
 					}}
 					sx={{
+						// Focused underline
 						"& .MuiInput-underline:after": {
-							borderBottomColor: "#3AA6A4",
+							borderBottomColor: "#3AA6A4", // your teal
 						},
+						// Hover underline
 						"& .MuiInput-underline:hover:before": {
 							borderBottomColor: "#3AA6A4",
 						},
+						// Label when focused
 						"& .MuiInputLabel-root.Mui-focused": {
 							color: "#3AA6A4",
 						},

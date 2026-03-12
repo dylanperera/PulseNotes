@@ -2,7 +2,6 @@ import { useEffect, useRef, useState } from "react";
 import "./TranscriptionPage.css";
 import AutoAwesomeIcon from "@mui/icons-material/AutoAwesome";
 import useWebSocket, { ReadyState } from "react-use-websocket";
-import dayjs, { type Dayjs } from "dayjs";
 import logo from "../../assets/images/PulseNotesTransparent.png";
 import Calendar from "../../Components/Calendar";
 import ExportButton from "../../Components/ExportButton";
@@ -88,12 +87,8 @@ function TranscriptionPage() {
 
 	const [recordingState, setRecordingState] = useState<RecordingState>("idle");
 
-	const [patientName, setPatientName] = useState("");
-	const [dateTime, setDateTime] = useState<Dayjs | null>(dayjs());
-
 	const [transcript, setTranscript] = useState("");
 	const [summary, setSummary] = useState("");
-	const [summaryHtml, setSummaryHtml] = useState("");
 
 	const [isLoading, setIsLoading] = useState(false); // Loading state for summary
 	const hasStarted = useRef(false); // ref to check if recording has started summarizing (more of a safe-guard to remove the loading spinner)
@@ -195,7 +190,7 @@ function TranscriptionPage() {
 				prompt: prompt,
 				model_name: currentlyUsedModel,
 				service_name: "llama.cpp",
-				model_path: '/Users/dylanperera/Desktop/test_models'
+				model_path: '/Users/dylanperera/Desktop/test_models/'
 			},
 		});
 
@@ -211,7 +206,7 @@ function TranscriptionPage() {
 			{/* Header */}
 			<div className="top-level-header">
 				<div style={{ display: "flex" }}>
-					<PatientName value={patientName} onChange={setPatientName} />
+					<PatientName />
 					<NewSessionButton isRecording={isRecording} />
 				</div>
 
@@ -228,15 +223,11 @@ function TranscriptionPage() {
 			</div>
 
 			<div className="second-level-header">
-				<Calendar value={dateTime} onChange={setDateTime} />
+				<Calendar />
 
 				<div className="main-options">
 					<SelectModelOptions currentlyUsedModel = {currentlyUsedModel}  handleSetModel={handleSetModel}/>
-					<ExportButton
-						htmlContent={summaryHtml}
-						patientName={patientName}
-						dateTime={dateTime?.format("MMMM D, YYYY h:mm A") ?? ""}
-					/>
+					<ExportButton />
 				</div>
 			</div>
 
@@ -253,7 +244,6 @@ function TranscriptionPage() {
 					id="summary"
 					text={summary}
 					setContent={setSummary}
-					setHtmlContent={setSummaryHtml}
 					isRecording={isRecording}
 					isLoading={isLoading}
 					placeHolder="Summary..."
