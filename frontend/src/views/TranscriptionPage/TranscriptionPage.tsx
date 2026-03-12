@@ -89,6 +89,7 @@ function TranscriptionPage() {
 
 	const [transcript, setTranscript] = useState("");
 	const [summary, setSummary] = useState("");
+	const [summaryHtml, setSummaryHtml] = useState("");
 
 	const [isLoading, setIsLoading] = useState(false); // Loading state for summary
 	const hasStarted = useRef(false); // ref to check if recording has started summarizing (more of a safe-guard to remove the loading spinner)
@@ -190,7 +191,7 @@ function TranscriptionPage() {
 				prompt: prompt,
 				model_name: currentlyUsedModel,
 				service_name: "llama.cpp",
-				model_path: '/Users/dylanperera/Desktop/test_models/'
+				model_path: '/Users/someshkarthi/Desktop/test_models'
 			},
 		});
 
@@ -227,7 +228,7 @@ function TranscriptionPage() {
 
 				<div className="main-options">
 					<SelectModelOptions currentlyUsedModel = {currentlyUsedModel}  handleSetModel={handleSetModel}/>
-					<ExportButton />
+					<ExportButton htmlContent={summaryHtml} />
 				</div>
 			</div>
 
@@ -244,6 +245,7 @@ function TranscriptionPage() {
 					id="summary"
 					text={summary}
 					setContent={setSummary}
+					setHtmlContent={setSummaryHtml}
 					isRecording={isRecording}
 					isLoading={isLoading}
 					placeHolder="Summary..."
