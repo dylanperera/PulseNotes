@@ -38,7 +38,7 @@ class LlamaCppInterface(ModelInterface):
                 verbose=False,
                 n_gpu_layers=-1,        # Full Metal acceleration
                 n_threads=self.num_threads,
-                n_ctx=4096              # Context window
+                n_ctx=6000              # Context window
             )
             logger.info(f"Successfully loaded model: {model_name}")
         except Exception as e:
@@ -82,7 +82,7 @@ class LlamaCppInterface(ModelInterface):
                                                      min_p=0.05,                     # Helps avoid weird token drops (q4 models)
                                                      top_k=40,                       # Good balance for small models.
                                                      repeat_penalty=1.05,            # Prevents looping without hurting accuracy.
-                                                     max_tokens=4096,                # Plenty for summary + SOAP.
+                                                     max_tokens=1000,                # Plenty for summary + SOAP.
                                                  stream=stream
                                                 # stop=["</s>", "<|eot_id|>"]    # Important for Llama-style formatting.
             )
