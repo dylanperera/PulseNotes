@@ -19,8 +19,15 @@ import { Chip, ListItemText, Tooltip } from "@mui/material";
 import CustomPrompt from "./CustomPrompt";
 import SelectMicrophoneInput from "./SelectMicrophoneInput";
 
+declare global {
+  interface Window {
+    electronAPI: {
+      getModelsPath: () => Promise<string>;
+    };
+  }
+}
+
 const END_POINT_URL = "http://127.0.0.1:8000";
-const PATH = "/Users/jaydenferrer/Desktop/test_models"; // TODO: Make this dynamic
 
 type ModalState = "confirm" | "loading" | "success" | "closed";
 
@@ -125,8 +132,11 @@ export default function SettingsModal({
 
 	const fetchModels = async () => {
 	try {
+		const userDataPath = await window.electronAPI.getModelsPath();
+
 		const response = await axios.get<SuccessDTO<ModelAvailabilityDTO[]>>(
-		`${END_POINT_URL}/models`
+		`${END_POINT_URL}/models`,
+		{ params: {path: userDataPath} }
 		);
 
 		const models = response.data.result;
@@ -165,11 +175,13 @@ export default function SettingsModal({
 	}
 	};
 
-	const deleteModel = async (modelName: string, path: string) => {
+	const deleteModel = async (modelName: string) => {
 		try {
+			const userDataPath = await window.electronAPI.getModelsPath();
+
 			await axios.delete<SuccessDTO<DeleteResponseDTO>>(
 				`${END_POINT_URL}/models/delete`,
-				{ params: { model_name: modelName } }
+				{ params: { model_name: modelName, path: userDataPath} }
 			);
 			setDeleteModelModalText("Successfully removed model from device");
 			fetchModels();
@@ -181,14 +193,16 @@ export default function SettingsModal({
 		}
 	};
 
-	const downloadModel = async (modelName: string, path: string) => {
+	const downloadModel = async (modelName: string) => {
 		try {
 			setDownloadModelModalStatusText("Downloading... this may take a few minutes");
 			setModelModalState("loading");
+			const userDataPath = await window.electronAPI.getModelsPath();
+
 			await axios.post<SuccessDTO<DownloadResponseDTO>>(
 				`${END_POINT_URL}/models/download`,
 				null,
-				{ params: { model_name: modelName } }
+				{ params: { model_name: modelName, path: userDataPath} }
 			);
 			setDownloadModelModalStatusText("Successfully downloaded model");
 			fetchModels();
@@ -251,7 +265,7 @@ export default function SettingsModal({
 					open={deleteModalOpen}
 					onHandleClose={handleDeleteModalClose}
 					nextStepButtonName="Delete Model"
-					nextStepCallback={async () => deleteModel(modelToDelete, PATH)}
+					nextStepCallback={async () => deleteModel(modelToDelete)}
 					modalTitle="Confirm to Delete Model"
 					modalText={deleteModelModalText}
 					modalState={modelModalState}
@@ -261,7 +275,7 @@ export default function SettingsModal({
 					open={downloadModalOpen}
 					onHandleClose={handleDownloadModalClose}
 					nextStepButtonName="Download Model"
-					nextStepCallback={async () => downloadModel(modelToDownload, PATH)}
+					nextStepCallback={async () => downloadModel(modelToDownload)}
 					modalTitle="Confirm to Download Model"
 					modalText={downloadModelModalStatusText}
 					modalState={modelModalState}
@@ -517,7 +531,7 @@ export default function SettingsModal({
 					/>
 
 					<Typography sx={descriptionStyle}>
-						This prompt controls how the summarization model generates the SOAP note.
+						This prompt controls how the summarization model generates the note.
 					</Typography>
 				</Box>
 				{/* Close Button */}
