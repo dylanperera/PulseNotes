@@ -13,17 +13,13 @@ logger = logging.getLogger(__name__)
 
 class ModelServices:
 
-    def __init__(self):
-        Path("models/transcription").mkdir(parents=True, exist_ok=True)
-        Path("models/summarization").mkdir(parents=True, exist_ok=True)
-
     def _get_model(self, model_name):
         for model in MODEL_REGISTRY:
             if model["model_download_name"] == model_name:
                 return model
         return None
 
-    def check_available_models(self):
+    def check_available_models(self, path):
 
         result = []
 
@@ -46,7 +42,7 @@ class ModelServices:
                 reason=""
             )
 
-            file_path = Path(model["local_path"]) / model["file"]
+            file_path = Path(path) / model["file"]
 
             if file_path.exists():
                 dto.downloaded = True
@@ -70,14 +66,13 @@ class ModelServices:
 
         return result
 
-    def download_model(self, model_name):
-
+    def download_model(self, model_name, path):
         model = self._get_model(model_name)
 
         if not model:
             return ErrorMessage.MODEL_DOES_NOT_EXIST
 
-        file_path = Path(model["local_path"]) / model["file"]
+        file_path = Path(path) / model["file"]
 
         if file_path.exists():
             return ErrorMessage.MODEL_EXISTS
@@ -92,7 +87,7 @@ class ModelServices:
                 hf_hub_download(
                     repo_id=model["repo"],
                     filename=model["file"],
-                    local_dir=model["local_path"]
+                    local_dir=path
                 )
 
             elif model["source"] == "url":
@@ -112,14 +107,14 @@ class ModelServices:
 
         return None
 
-    def delete_model(self, model_name):
+    def delete_model(self, model_name, path):
 
         model = self._get_model(model_name)
 
         if not model:
             return ErrorMessage.MODEL_DOES_NOT_EXIST
 
-        file_path = Path(model["local_path"]) / model["file"]
+        file_path = Path(path) / model["file"]
 
         if not file_path.exists():
             return ErrorMessage.MODEL_DOES_NOT_EXIST

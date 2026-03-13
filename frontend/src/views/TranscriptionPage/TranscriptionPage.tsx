@@ -3,14 +3,12 @@ import "./TranscriptionPage.css";
 import AutoAwesomeIcon from "@mui/icons-material/AutoAwesome";
 import useWebSocket, { ReadyState } from "react-use-websocket";
 import dayjs, { type Dayjs } from "dayjs";
-import logo from "../../assets/images/PulseNotesTransparent.png";
 import Calendar from "../../Components/Calendar";
 import ExportButton from "../../Components/ExportButton";
 import NewSessionButton from "../../Components/NewSessionButton";
 import PatientName from "../../Components/PatientName";
 import RecordingOptions from "../../Components/RecordingOptions";
 import RichTextField from "../../Components/RichTextField";
-import SelectModelOptions from "../../Components/SelectModelOptions";
 import TextField from "../../Components/TextField";
 import Timer from "../../Components/Timer";
 import SettingsModal from "../../Components/SettingsModal";
@@ -19,9 +17,7 @@ import { Chip } from "@mui/material";
 import Snackbar from "@mui/material/Snackbar";
 import Alert from "@mui/material/Alert";
 
-
 const initialPrompt: string = `You are a clinical documentation assistant. Your job is to create a concise clinical SUMMARY and SOAP note based ONLY on what is stated in the conversation. You MUST NOT add, infer, or guess any medical details.
-
         STRICT RULES (DO NOT BREAK THESE):
         - Do NOT diagnose anything (no anxiety disorder, depression, cardiomyopathy, etc.).
         - Do NOT suggest or imply causes of symptoms.
@@ -30,42 +26,51 @@ const initialPrompt: string = `You are a clinical documentation assistant. Your 
         - Do NOT state or invent vital signs, normal results, abnormal results, or physical exam findings.
         - Do NOT expand the plan beyond what the doctor actually said.
         - Do NOT use terms like “should,” “needs to,” “likely,” “could indicate,” or similar inference language.
-
         ALLOWED:
         - ONLY describe what the patient and doctor explicitly said.
         - You MAY summarize patterns using neutral phrasing such as:
-        “Based on the patient’s report…”
+        “Based on the patient’s report…” 
         “Symptoms tend to occur during…”
         “The patient describes…”
-
         FORMAT REQUIREMENTS:
-
         SUMMARY (4 sentences):
         - Include major symptoms, patterns, triggers, emotional themes, sleep issues, stressors, and patient goals.
         - Keep it factual and clinically neutral.
         - DO NOT give interpretations or advice.
-
         SOAP NOTE:
-
         Subjective:
         - List ONLY patient-reported symptoms, stressors, emotional themes, sleep patterns, and concerns.
         - No interpretations.
-
         Objective:
         - ONLY include objective findings if explicitly spoken by the doctor.
         - If none were discussed, write: “No objective findings were discussed.”
-
         Assessment:
         - Summarize symptom patterns WITHOUT diagnosing or giving medical explanations.
         - Use ONLY neutral phrasing, e.g., “Based on the patient’s report, symptoms tend to occur during…”
         - Do NOT list any medical conditions.
-
         Plan:
         - ONLY include plan items explicitly stated by the doctor.
         - If the doctor did not provide specific next steps, write:
         “No specific plan was discussed in this conversation.”
-
-        Your output MUST stay strictly faithful to the transcript with zero added content.`;
+        Your output MUST stay strictly faithful to the transcript with zero added content.
+        IMPORTANT OUTPUT RULES:
+        - Generate EXACTLY ONE SUMMARY section and EXACTLY ONE SOAP NOTE section.
+        - Do NOT repeat sections.
+        - Do NOT restart the output.
+        - Stop generating after the Plan section.
+        
+        OUTPUT FORMAT (follow exactly):
+        SUMMARY (4 sentences):
+        ...
+        SOAP NOTE
+        Subjective:
+        ...
+        Objective:
+        ...
+        Assessment:
+        ...
+        Plan:
+        ...`;
 
 type WSMessage =
 	| {
@@ -107,7 +112,7 @@ function TranscriptionPage() {
 
 	const [currentlyUsedModel, setCurrentlyUsedModel] = useState<string>("");
 
-	const [selectedTranscriptionModel, setSelectedTranscriptionModel] = useState<string>("small");
+	const [selectedTranscriptionModel, setSelectedTranscriptionModel] = useState<string>("None");
 
 	const [errorMessage, setErrorMessage] = useState<string | null>(null);
 	const [selectedMicrophoneDeviceId, setSelectedMicrophoneDeviceId] = useState<number | null>(null);
@@ -216,10 +221,12 @@ function TranscriptionPage() {
 		}
 	}, [lastJsonMessage]);
 
-	const handleSummarizeClick = () => {
+	const handleSummarizeClick = async () => {
 		if (recordingState === "recording") return;
 		if (readyState !== ReadyState.OPEN) return;
 
+		const path = await window.electronAPI.getModelsPath();
+		
 		sendJsonMessage({
 			type: "transcription_chunk",
 			payload: {
@@ -227,7 +234,7 @@ function TranscriptionPage() {
 				prompt: prompt,
 				model_name: currentlyUsedModel,
 				service_name: "llama.cpp",
-				model_path: '/Users/jaydenferrer/Desktop/test_models/'
+				model_path: path
 			},
 		});
 
@@ -331,20 +338,20 @@ function TranscriptionPage() {
 			{/* Footer */}
 			{/* IF WE WANT THE PROMPT TO STAY ON THE MAIN SCREEN, KEEP THIS HERE */}
 			{
-			// 	<div className="footer">
-			// 	<CustomPrompt isLoading={isLoading} prompt={prompt} setPrompt={setPrompt}/>
-			// 	<button
-			// 			className={`summarize-button ${isSummaryDisabled() ? "summarize-button-off" : "summarize-button-on"}`}
-			// 			onClick={handleSummarizeClick}
-			// 			disabled={isSummaryDisabled()}
-			// 			type="button"
+				<div className="footer">
+				{/* <CustomPrompt isLoading={isLoading} prompt={prompt} setPrompt={setPrompt}/> */}
+				<button
+						className={`summarize-button ${isSummaryDisabled() ? "summarize-button-off" : "summarize-button-on"}`}
+						onClick={handleSummarizeClick}
+						disabled={isSummaryDisabled()}
+						type="button"
 
-			// 		>
-			// 			<b>SUMMARIZE</b>
-			// 			<AutoAwesomeIcon />
-			// 	</button>
-			// 	{/* <img src={logo} alt="Pulse Notes Logo" /> */}
-			// </div>
+					>
+						<b>SUMMARIZE</b>
+						<AutoAwesomeIcon />
+				</button>
+				{/* <img src={logo} alt="Pulse Notes Logo" /> */}
+			</div>
 			}
 
 		<SettingsModal

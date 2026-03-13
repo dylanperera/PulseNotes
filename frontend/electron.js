@@ -1,5 +1,7 @@
-const { app, BrowserWindow } = require("electron");
+const { app, BrowserWindow, ipcMain} = require("electron");
 const path = require("path");
+const fs = require("fs");
+
 app.name = "PulseNotes";
 
 function createWindow() {
@@ -17,6 +19,12 @@ function createWindow() {
 }
 
 app.whenReady().then(() => {
+	const modelsPath = path.join(app.getPath("userData"), "models");
+
+	fs.mkdirSync(modelsPath, { recursive: true });
+
+	ipcMain.handle("get-models-path", () =>  {return modelsPath});
+
 	createWindow();
 
 	if (process.platform === "darwin") {

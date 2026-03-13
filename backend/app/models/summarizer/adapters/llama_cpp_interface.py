@@ -4,6 +4,7 @@ import logging
 from app.utils.utils import get_model_path, stream_response
 from .base_llm_interface import ModelInterface
 from llama_cpp import Llama
+from pathlib import Path
 
 logger = logging.getLogger(__name__)
 
@@ -12,20 +13,6 @@ class LlamaCppInterface(ModelInterface):
     def __init__(self, model_name:str, model_path: str):
         self.num_threads = max(multiprocessing.cpu_count() // 2, 1)  # Use half the cores available
 
-        # self.models = {
-        #                 "Llama 3.2": {
-        #                     "file": "Llama-3.2-1B-Instruct-Q5_K_S.gguf",
-        #                     "size": 0.893
-        #                 },
-        #                 "Medi-Phi": {
-        #                     "file": "MediPhi-Clinical.i1-Q4_K_M.gguf",
-        #                     "size": 2.39
-        #                 },
-        #                 "Large Model": {
-        #                     "file": "large-model",
-        #                     "size": 4.9
-        #                 },
-        #               }
         self.models = {
             "llama32": {
                 "file": "Llama-3.2-1B-Instruct-Q5_K_S.gguf",
@@ -41,14 +28,17 @@ class LlamaCppInterface(ModelInterface):
             },
         }
 
+
         try:
+            gguf_path = Path(model_path) / self.models[model_name]["file"]
+            print(gguf_path)
             # Select correct model given the model name from user
             self.llm = Llama(
-                model_path= model_path + self.models[model_name]["file"],
+                model_path= str(gguf_path),
                 verbose=False,
                 n_gpu_layers=-1,        # Full Metal acceleration
                 n_threads=self.num_threads,
-                n_ctx=4096              # Context window
+                n_ctx=6000              # Context window
             )
             logger.info(f"Successfully loaded model: {model_name}")
         except Exception as e:
@@ -92,7 +82,7 @@ class LlamaCppInterface(ModelInterface):
                                                      min_p=0.05,                     # Helps avoid weird token drops (q4 models)
                                                      top_k=40,                       # Good balance for small models.
                                                      repeat_penalty=1.05,            # Prevents looping without hurting accuracy.
-                                                     max_tokens=4096,                # Plenty for summary + SOAP.
+                                                     max_tokens=1000,                # Plenty for summary + SOAP.
                                                  stream=stream
                                                 # stop=["</s>", "<|eot_id|>"]    # Important for Llama-style formatting.
             )

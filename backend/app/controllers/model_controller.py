@@ -12,9 +12,9 @@ class ModelController(Controller):
         super().__init__()
         self.model_services = ModelServices()
 
-    def get_models_status(self):
+    def get_models_status(self, path):
 
-        result = self.model_services.check_available_models()
+        result = self.model_services.check_available_models(path)
 
         if isinstance(result, list):
             return SuccessDTO(result=result, status_code=200)
@@ -24,9 +24,8 @@ class ModelController(Controller):
                 status_code=ERROR_CODE_MAP[result]
             )
 
-    def download_new_model(self, model_name):
-
-        result = self.model_services.download_model(model_name)
+    def download_new_model(self, model_name, path):
+        result = self.model_services.download_model(model_name, path)
 
         if result is None:
             return SuccessDTO(
@@ -39,9 +38,9 @@ class ModelController(Controller):
                 status_code=ERROR_CODE_MAP[result]
             )
 
-    def remove_model_from_disk(self, model_name):
+    def remove_model_from_disk(self, model_name, path):
 
-        result = self.model_services.delete_model(model_name)
+        result = self.model_services.delete_model(model_name, path)
 
         if result is None:
             return SuccessDTO(
