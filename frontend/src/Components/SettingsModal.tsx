@@ -18,6 +18,8 @@ import CustomModal from "./Modal";
 import { Chip, ListItemText, Tooltip } from "@mui/material";
 import CustomPrompt from "./CustomPrompt";
 import SelectMicrophoneInput from "./SelectMicrophoneInput";
+import { SettingsIcon } from "lucide-react";
+import RefreshIcon from '@mui/icons-material/Refresh';
 
 declare global {
   interface Window {
@@ -519,6 +521,29 @@ export default function SettingsModal({
 						</Select>
 
 				</Box>
+				<Tooltip title="Refresh model availability (checks RAM capacity)" arrow placement="right">
+					<IconButton
+						onClick={fetchModels}
+						title="Refresh models"
+						sx={{
+							backgroundColor: "#f0f0f0",
+							color: "#333",
+							border: "1px solid #ddd",
+							borderRadius: "10px",
+							marginBottom: "2rem",
+							p: 1,
+							transition: "background-color 0.2s ease, transform 0.1s ease",
+							"&:hover": {
+							backgroundColor: "#e0e0e0",
+							},
+							"&:active": {
+							transform: "scale(0.98)",
+							},
+						}}
+						>
+						<RefreshIcon sx={{ fontSize: 22 }} />
+					</IconButton>
+				</Tooltip>
 
 				{/* Custom Prompt Input */}
 				<Box sx={sectionStyle}>
