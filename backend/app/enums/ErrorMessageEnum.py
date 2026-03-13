@@ -15,7 +15,7 @@ MESSAGE_MAP: dict[ErrorMessage, str] = {
     ErrorMessage.MODEL_EXISTS: "Model already exists on system",
     ErrorMessage.INVALID_PATH: "The provided path is invalid",
     ErrorMessage.MODEL_NAME_MISSING: "Model name is missing in input",
-    ErrorMessage.MODEL_DOES_NOT_EXIST: "The model you are trying to delete does not exist",
+    ErrorMessage.MODEL_DOES_NOT_EXIST: "The model you are trying to access or delete does not exist",
     ErrorMessage.COULD_NOT_DELETE_MODEL: "Could not delete model"
 }
 

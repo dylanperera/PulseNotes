@@ -108,10 +108,10 @@ async def get_audio_devices():
         )
 
 @app.get('/models', response_model=SuccessDTO)
-async def get_models():
+async def get_models(path = "/"):
     model_controller = ModelController()
 
-    result: SuccessDTO | ErrorDTO = model_controller.get_models_status()
+    result: SuccessDTO | ErrorDTO = model_controller.get_models_status(path)
 
     if(isinstance(result, ErrorDTO)):
         raise HTTPException(status_code=result.status_code, detail=result.model_dump())
@@ -119,20 +119,20 @@ async def get_models():
 
 
 @app.post("/models/download", response_model=SuccessDTO)
-async def download_model(model_name: str = ""):
-
+async def download_model(model_name: str = "", path: str="/"):
+    print(model_name)
     model_controller = ModelController()
-    result: SuccessDTO | ErrorDTO = model_controller.download_new_model(model_name)
+    result: SuccessDTO | ErrorDTO = model_controller.download_new_model(model_name, path)
 
     if(isinstance(result, ErrorDTO)):
         raise HTTPException(status_code=result.status_code, detail=result.model_dump())
     return result
 
 @app.delete("/models/delete", response_model=SuccessDTO)
-async def remove_model_from_disk(model_name: str = ""):
+async def remove_model_from_disk(model_name: str = "", path: str="/"):
 
     model_controller = ModelController()
-    result: SuccessDTO | ErrorDTO = model_controller.remove_model_from_disk(model_name)
+    result: SuccessDTO | ErrorDTO = model_controller.remove_model_from_disk(model_name, path)
 
     if(isinstance(result, ErrorDTO)):
         raise HTTPException(status_code=result.status_code, detail=result.model_dump())
