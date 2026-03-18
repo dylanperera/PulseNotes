@@ -13,6 +13,7 @@ import TextField from "../../Components/TextField";
 import Timer from "../../Components/Timer";
 import SettingsModal from "../../Components/SettingsModal";
 import SettingsIcon from "@mui/icons-material/Settings";
+import { WS_URL as WS_URL_CONFIG } from "../../config";
 import { Chip } from "@mui/material";
 import Snackbar from "@mui/material/Snackbar";
 import Alert from "@mui/material/Alert";
@@ -94,7 +95,7 @@ type RecordingState = "idle" | "recording" | "paused";
 function TranscriptionPage() {
 	// TODO: Look into changing this to be dynamic just in case a port is blocked
 	//const WS_URL = "http://127.0.0.1:8000/ws"
-	const WS_URL = "ws://127.0.0.1:8000/ws";
+	const WS_URL = WS_URL_CONFIG;
 
 	const [recordingState, setRecordingState] = useState<RecordingState>("idle");
 

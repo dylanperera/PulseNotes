@@ -11,18 +11,34 @@ from app.dtos.error_dto import ErrorDTO
 from fastapi.middleware.cors import CORSMiddleware
 from app.enums.ErrorMessageEnum import ErrorMessage
 from huggingface_hub import login
+from dotenv import load_dotenv
 import os
 from app.registry.model_registry import MODEL_REGISTRY
+
+# Load environment variables from .env
+load_dotenv()
+
+frontend_port = os.getenv("FRONTEND_PORT", "3000")
+cors_origins = [
+    f"http://127.0.0.1:{frontend_port}",
+    f"http://localhost:{frontend_port}",
+    "file://",
+]
 
 app = FastAPI()
 
 app.add_middleware(CORSMiddleware,
                    allow_credentials=False,
-                   allow_origins=["*"],
+                   allow_origins=cors_origins,
                    allow_methods=["*"],
                    allow_headers=["*"])
 
-login(os.getenv("HF_TOKEN"))
+try:
+    token = os.getenv("HF_TOKEN")
+    if token:
+        login(token)
+except Exception as e:
+    print(f"Warning: HF login failed: {e}. Model downloads may not work.")
 
 # Generic websocket endpoint
 @app.websocket("/ws")
@@ -90,6 +106,10 @@ async def web_socket_endpoint(websocket: WebSocket):
 
 
     await websocket.close()
+
+@app.get('/health')
+async def health():
+    return {"status": "ok"}
 
 @app.get('/audio-devices')
 async def get_audio_devices():

@@ -31,9 +31,10 @@ class TranscriptionController(Controller):
         self.service.resume()
 
     async def _run(self):
+        loop = asyncio.get_event_loop()
         try:
             while True:
-                self.service.process_audio()
+                await loop.run_in_executor(None, self.service.process_audio)
 
                 msg = self.service.get_transcription()
                 if msg:

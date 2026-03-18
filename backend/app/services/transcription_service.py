@@ -68,15 +68,19 @@ class TranscriptionService():
         if not self.running or self.audio_capture.paused:
             return
 
-        chunk = self.audio_capture.read_chunk(block=False)
-        if chunk is None:
-            return
+        # Drain all available audio chunks before transcribing
+        chunks_read = 0
+        while True:
+            chunk = self.audio_capture.read_chunk(block=False)
+            if chunk is None:
+                break
+            processed = self.audio_preprocessor.process_audio(chunk)
+            self.transcription_adapter.add_audio_chunk(processed)
+            chunks_read += 1
 
-        processed = self.audio_preprocessor.process_audio(chunk)
-        self.transcription_adapter.add_audio_chunk(processed)
-
-        # Partial transcription
-        self.transcription_adapter.transcribe(finalize=False)
+        if chunks_read > 0:
+            # Partial transcription
+            self.transcription_adapter.transcribe(finalize=False)
 
     # used to just ensure the final collected audio is actually processed.. basically just cleans the last transcription
     def get_transcription(self):

@@ -8,6 +8,7 @@ import MenuItem from "@mui/material/MenuItem";
 import IconButton from "@mui/material/IconButton";
 import FileDownloadOutlinedIcon from "@mui/icons-material/FileDownloadOutlined";
 import DeleteOutlinedIcon from "@mui/icons-material/DeleteOutlined";
+import { BACKEND_URL } from "../config";
 import axios from "axios";
 import { useState, useEffect } from "react";
 import { type SuccessDTO } from "../dtos/BaseResponse";
@@ -29,7 +30,7 @@ declare global {
   }
 }
 
-const END_POINT_URL = "http://127.0.0.1:8000";
+const END_POINT_URL = BACKEND_URL;
 
 type ModalState = "confirm" | "loading" | "success" | "closed";
 
