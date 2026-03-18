@@ -40,10 +40,12 @@
 		"start-electron": "wait-on http://localhost:3000 && node node_modules/electron/cli.js .",
 		"build-backend-linux": "cd ../backend && uv run --with pyinstaller pyinstaller --onefile --name pulsenotes-backend --collect-binaries llama_cpp --collect-data llama_cpp run_backend.py",
 		"build-backend-mac": "cd ../backend && uv run --with pyinstaller pyinstaller --onefile --name pulsenotes-backend --collect-binaries llama_cpp --collect-data llama_cpp run_backend.py",
+		"build-backend-win": "cd ../backend && uv run --with pyinstaller pyinstaller --onefile --name pulsenotes-backend --collect-binaries llama_cpp --collect-data llama_cpp run_backend.py",
 		"build": "react-scripts build",
 		"build-electron": "electron-builder",
 		"package-linux": "npm run build-backend-linux && npm run build && npm run build-electron -- --linux AppImage --config.directories.output=dist-linux",
 		"package-mac": "npm run build-backend-mac && npm run build && npm run build-electron -- --mac dmg --config.directories.output=dist-mac",
+		"package-win": "npm run build-backend-win && npm run build && npm run build-electron -- --win nsis --config.directories.output=dist-win",
 		"test": "react-scripts test",
 		"eject": "react-scripts eject",
 		"lint-format": "npx @biomejs/biome check --write"

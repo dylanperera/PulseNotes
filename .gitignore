@@ -7,5 +7,5 @@ venv/
 launch.json
 .DS_Store
 .env
-dist/
+dist*/
 build/
