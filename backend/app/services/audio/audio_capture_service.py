@@ -30,7 +30,7 @@ class AudioCapture:
         self.device_id = device_id  # microphone device ID (None = default device)
         # internal use
         self.stream = None
-        self.audio_queue = queue.Queue(maxsize=10) # check this.. may lead to dropped audio
+        self.audio_queue = queue.Queue(maxsize=100)
         self.running = False
         self.paused = False
 
