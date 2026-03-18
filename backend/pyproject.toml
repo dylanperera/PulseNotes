@@ -14,4 +14,5 @@ dependencies = [
     "pywhispercpp>=1.4.1",
     "sounddevice>=0.5.3",
     "uvicorn>=0.40.0",
+    "python-dotenv>=1.0.0",
 ]

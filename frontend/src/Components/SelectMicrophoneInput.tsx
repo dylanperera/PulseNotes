@@ -6,8 +6,9 @@ import { alpha, styled } from "@mui/material/styles";
 import axios from "axios";
 import { useState, useEffect, MouseEvent } from "react";
 import { type SuccessDTO } from "../dtos/BaseResponse";
+import { BACKEND_URL } from "../config";
 
-const END_POINT_URL = "http://127.0.0.1:8000";
+const END_POINT_URL = BACKEND_URL;
 
 const StyledMenu = styled(Menu)(({ theme }) => ({
 	"& .MuiPaper-root": {

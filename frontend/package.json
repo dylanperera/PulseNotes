@@ -2,6 +2,7 @@
 	"name": "frontend",
 	"version": "0.1.0",
 	"private": true,
+	"homepage": "./",
 	"main": "electron.js",
 	"dependencies": {
 		"@emotion/react": "^11.14.0",
@@ -35,13 +36,75 @@
 	},
 	"scripts": {
 		"start": "concurrently \"npm run start-react\" \"npm run start-electron\"",
-		"start-react": "BROWSER=none react-scripts start",
-		"start-electron": "wait-on http://localhost:3000 && electron .",
+		"start-react": "cross-env BROWSER=none react-scripts start",
+		"start-electron": "wait-on http://localhost:3000 && node node_modules/electron/cli.js .",
+		"build-backend-linux": "cd ../backend && uv run --with pyinstaller pyinstaller --onefile --name pulsenotes-backend --collect-binaries llama_cpp --collect-data llama_cpp run_backend.py",
+		"build-backend-mac": "cd ../backend && uv run --with pyinstaller pyinstaller --onefile --name pulsenotes-backend --collect-binaries llama_cpp --collect-data llama_cpp run_backend.py",
 		"build": "react-scripts build",
 		"build-electron": "electron-builder",
+		"package-linux": "npm run build-backend-linux && npm run build && npm run build-electron -- --linux AppImage --config.directories.output=dist-linux",
+		"package-mac": "npm run build-backend-mac && npm run build && npm run build-electron -- --mac dmg --config.directories.output=dist-mac",
 		"test": "react-scripts test",
 		"eject": "react-scripts eject",
 		"lint-format": "npx @biomejs/biome check --write"
+	},
+	"build": {
+		"appId": "com.pulsenotes.app",
+		"productName": "PulseNotes",
+		"extraMetadata": {
+			"main": "electron.js"
+		},
+		"files": [
+			"build/**/*",
+			"electron.js",
+			"preload.js",
+			"package.json",
+			"public/**/*"
+		],
+		"extraResources": [
+			{
+				"from": "../backend/.env",
+				"to": "backend/.env"
+			}
+		],
+		"win": {
+			"target": [
+				"nsis"
+			],
+			"extraResources": [
+				{
+					"from": "../backend/dist/pulsenotes-backend.exe",
+					"to": "backend/pulsenotes-backend.exe"
+				}
+			]
+		},
+		"linux": {
+			"target": [
+				"AppImage"
+			],
+			"category": "Utility",
+			"extraResources": [
+				{
+					"from": "../backend/dist/pulsenotes-backend",
+					"to": "backend/pulsenotes-backend"
+				}
+			]
+		},
+		"mac": {
+			"target": [
+				"dmg"
+			],
+			"category": "public.app-category.medical",
+			"extraResources": [
+				{
+					"from": "../backend/dist/pulsenotes-backend",
+					"to": "backend/pulsenotes-backend"
+				}
+			],
+			"extendInfo": {
+				"NSMicrophoneUsageDescription": "PulseNotes needs microphone access for speech-to-text transcription."
+			}
+		}
 	},
 	"eslintConfig": {
 		"extends": [
@@ -64,7 +127,9 @@
 	"devDependencies": {
 		"@biomejs/biome": "^2.3.4",
 		"concurrently": "^9.2.1",
+		"cross-env": "^10.1.0",
 		"electron": "^39.0.0",
+		"electron-builder": "^25.1.8",
 		"wait-on": "^9.0.1"
 	}
 }
