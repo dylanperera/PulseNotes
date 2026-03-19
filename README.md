@@ -1,7 +1,7 @@
 # PulseNotes - AI Medical Scribe
 Project Completed By: Dylan Perera, Jayden Ferrer, Somesh Karthi, Dev Aggarawal
 
-_Contact Information: If you have any questions or concers feel free to email any one of us, we will try our best to repond in a timely manner:_
+_Contact Information: If you have any questions, comments, or concerns about the app feel free to email any one of us, we will try our best to repond in a timely manner:_
 - pereradm14@gmail.com
 - jaydenemail
 - devemail
@@ -67,7 +67,7 @@ cd frontend
 # For Mac run the following command, it wil generate a .dmg executable which can then be run for Mac devices
 npm run package-mac
 
-# For Windos run the following command, it wil generate a .exe executable which can then be run for Windows devices
+# For Windows run the following command, it wil generate a .exe executable which can then be run for Windows devices
 
 ```
 
