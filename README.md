@@ -1,6 +1,11 @@
 # PulseNotes - AI Medical Scribe
 Project Completed By: Dylan Perera, Jayden Ferrer, Somesh Karthi, Dev Aggarawal
-
+_Contact Information: If you have any questions or concers feel free to email any one of us, we will try our best to repond in a timely manner:_
+- pereradm14@gmail.com
+- jaydenemail
+- devemail
+- somesh_karthi@yahoo.com
+- 
 ## 📌 Overview
 
 PulseNotes is an offline AI-powered medical documentation tool that transcribes and summarizes physician–patient conversations while preserving patient privacy.
@@ -28,12 +33,6 @@ Download the latest release from:
 [PulseNotes v1.0 (MacOS)](https://github.com/dylanperera/PulseNotes/releases/tag/V1.0(MacOS))
 
 [PulseNotes v1.0 (Windows)](https://github.com/dylanperera/PulseNotes/releases/tag/V1.0(Windows))
-
-_Contact Information: If you have any questions or concers feel free to email any one of us, we will try our best to repond in a timely manner:_
-- pereradm14@gmail.com
-- jaydenemail
-- devemail
-- somesh_karthi@yahoo.com
 
 
 ## 🛠️ Developer Setup
