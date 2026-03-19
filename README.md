@@ -26,6 +26,10 @@ Develop a secure, efficient system to:
 Download the latest release from: 
 
 _Note: If you would like to use our application, please send an email to either one of us for an access token:_
+- pereradm14@gmail.com
+- jaydenemail
+- devemail
+- someshemail
 
 
 ## 🛠️ Developer Setup
