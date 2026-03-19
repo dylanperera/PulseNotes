@@ -1,5 +1,6 @@
 # PulseNotes - AI Medical Scribe
 Project Completed By: Dylan Perera, Jayden Ferrer, Somesh Karthi, Dev Aggarawal
+
 _Contact Information: If you have any questions or concers feel free to email any one of us, we will try our best to repond in a timely manner:_
 - pereradm14@gmail.com
 - jaydenemail
