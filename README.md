@@ -29,7 +29,7 @@ Download the latest release from:
 
 [PulseNotes v1.0 (Windows)](https://github.com/dylanperera/PulseNotes/releases/tag/V1.0(Windows))
 
-_Note: If you would like to use our application, please send an email to either one of us for an access token:_
+_Contact Information: If you have any questions or concers feel free to email any one of us, we will try our best to repond in a timely manner:_
 - pereradm14@gmail.com
 - jaydenemail
 - devemail
