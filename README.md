@@ -31,7 +31,7 @@ _Note: If you would like to use our application, please send an email to either 
 - pereradm14@gmail.com
 - jaydenemail
 - devemail
-- someshemail
+- somesh_karthi@yahoo.com
 
 
 ## 🛠️ Developer Setup
