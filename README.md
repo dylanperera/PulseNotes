@@ -25,9 +25,9 @@ Develop a secure, efficient system to:
 ## 📥 Installation (For Users)
 Download the latest release from: 
 
-[PulseNotes (MacOS)](https://github.com/dylanperera/PulseNotes/releases/tag/V1.0(MacOS))
+[PulseNotes v1.0 (MacOS)](https://github.com/dylanperera/PulseNotes/releases/tag/V1.0(MacOS))
 
-[PulseNotes (Windows)](https://github.com/dylanperera/PulseNotes/releases/tag/V1.0(Windows))
+[PulseNotes v1.0 (Windows)](https://github.com/dylanperera/PulseNotes/releases/tag/V1.0(Windows))
 
 _Note: If you would like to use our application, please send an email to either one of us for an access token:_
 - pereradm14@gmail.com
