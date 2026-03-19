@@ -5,7 +5,7 @@ _Contact Information: If you have any questions or concers feel free to email an
 - jaydenemail
 - devemail
 - somesh_karthi@yahoo.com
-- 
+
 ## 📌 Overview
 
 PulseNotes is an offline AI-powered medical documentation tool that transcribes and summarizes physician–patient conversations while preserving patient privacy.
