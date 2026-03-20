@@ -35,6 +35,12 @@ Download the latest release from:
 
 [PulseNotes v1.0 (Windows)](https://github.com/dylanperera/PulseNotes/releases/tag/V1.0(Windows))
 
+## 📊 Feedback & Evaluation
+We would greatly appreciate your feedback to help improve PulseNotes.
+
+Please fill out this survey to provide feedback: [Survey Link](https://docs.google.com/forms/d/e/1FAIpQLSfb9GVJdtSraQQOEpDaVezRpjDS4xH-gkwhbTPC9E-wdHSqXg/viewform?usp=sharing&ouid=100425979111679799684)
+
+If you would like to check out current feedback and help fix/add any features check out: [Survey Response Link](https://docs.google.com/spreadsheets/d/1nD4gmncfYrKCLbljMixy1QBP1dUzOtbzDrxMGHAiZ0k/edit?gid=0#gid=0)
 
 ## 🛠️ Developer Setup
 Make sure you have the following installed:
