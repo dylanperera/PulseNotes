@@ -3,7 +3,6 @@
 <img width="250" height="250" alt="PulseNotesTransparent" src="https://github.com/user-attachments/assets/c536385d-425e-44ec-943b-41a28e9618b2" />
 
 
-
 Project Completed By: Dylan Perera, Jayden Ferrer, Somesh Karthi, Dev Aggarawal
 
 _Contact Information: If you have any questions, comments, or concerns about the app feel free to email any one of us, we will try our best to repond in a timely manner:_
